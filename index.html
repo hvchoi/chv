@@ -1,1 +1,89 @@
-test
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>동료 점심 호환성 테스트</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 화면 -->
+        <div id="main-screen" class="screen active">
+            <h1>🍽️ 동료 점심 호환성 테스트</h1>
+            <p class="subtitle">오늘 점심 메뉴로 누구와 함께 식사할까요?</p>
+            <button id="start-btn" class="btn btn-primary">테스트 시작하기</button>
+            <button id="view-results-btn" class="btn btn-secondary">결과 보기</button>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <h2>점심 선호도 퀴즈</h2>
+                <div class="progress-bar">
+                    <div id="progress" class="progress-fill"></div>
+                </div>
+                <p class="question-counter"><span id="current-q">1</span> / <span id="total-q">5</span></p>
+            </div>
+            
+            <div class="quiz-content">
+                <div id="name-input-section" class="quiz-section">
+                    <label for="employee-name">이름을 입력해주세요</label>
+                    <input type="text" id="employee-name" placeholder="홍길동" required>
+                </div>
+
+                <div id="quiz-questions" class="quiz-section"></div>
+            </div>
+
+            <div class="quiz-actions">
+                <button id="prev-btn" class="btn btn-secondary" style="display: none;">이전</button>
+                <button id="next-btn" class="btn btn-primary">다음</button>
+                <button id="submit-btn" class="btn btn-primary" style="display: none;">제출하기</button>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="results-screen" class="screen">
+            <h2>호환성 분석 결과</h2>
+            
+            <div class="results-content">
+                <!-- 호환성 그래프 -->
+                <div class="result-section">
+                    <h3>직원 간 호환성 그래프</h3>
+                    <div class="graph-container">
+                        <canvas id="compatibility-graph"></canvas>
+                    </div>
+                </div>
+
+                <!-- 호환성 매트릭스 -->
+                <div class="result-section">
+                    <h3>호환성 매트릭스</h3>
+                    <div id="compatibility-matrix" class="matrix-container"></div>
+                </div>
+
+                <!-- 그룹 추천 -->
+                <div class="result-section">
+                    <h3>추천 점심 그룹</h3>
+                    <div id="group-recommendations" class="groups-container"></div>
+                </div>
+
+                <!-- 식당 추천 -->
+                <div class="result-section">
+                    <h3>추천 식당</h3>
+                    <div id="restaurant-map" class="map-container"></div>
+                    <div id="restaurant-list" class="restaurant-list"></div>
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button id="new-test-btn" class="btn btn-primary">새 테스트하기</button>
+                <button id="back-to-main-btn" class="btn btn-secondary">메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
