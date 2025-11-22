@@ -3,4 +3,5 @@ compatibility_date = "2025-11-22"
 
 [assets]
 directory = "."
+serve_single_page_app = true
 
