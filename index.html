@@ -76,11 +76,32 @@
                     <div class="map-controls">
                         <input type="text" id="naver-client-id" placeholder="네이버 지도 Client ID (선택사항)" class="client-id-input">
                         <button id="load-map-btn" class="btn btn-secondary">지도 로드</button>
+                        <button id="show-guide-btn" class="btn btn-secondary">Client ID 발급 방법</button>
+                    </div>
+                    <div id="client-id-guide" class="guide-box" style="display: none;">
+                        <h4>📋 네이버 지도 Client ID 무료 발급 방법</h4>
+                        <ol>
+                            <li><a href="https://www.ncloud.com/" target="_blank">네이버 클라우드 플랫폼</a>에 접속하여 회원가입 및 로그인</li>
+                            <li>상단 메뉴에서 <strong>"AI·Application Service"</strong> → <strong>"Application"</strong> 선택</li>
+                            <li><strong>"애플리케이션 등록"</strong> 버튼 클릭</li>
+                            <li>애플리케이션 이름 입력 (예: "점심 호환성 테스트")</li>
+                            <li>사용할 API에서 <strong>"Maps"</strong> 선택</li>
+                            <li>서비스 환경 등록:
+                                <ul>
+                                    <li>웹 서비스: 도메인 입력 (예: localhost 또는 배포된 도메인)</li>
+                                    <li>테스트용: <code>localhost</code> 또는 <code>127.0.0.1</code> 입력 가능</li>
+                                </ul>
+                            </li>
+                            <li>등록 완료 후 <strong>"인증 정보"</strong>에서 <strong>Client ID</strong> 확인</li>
+                        </ol>
+                        <p class="guide-note">💡 네이버 지도 API는 무료로 제공되며, 일일 호출 제한이 있습니다.</p>
+                        <button id="close-guide-btn" class="btn btn-secondary" style="margin-top: 10px;">닫기</button>
                     </div>
                     <div id="restaurant-map" class="map-container">
                         <div class="map-placeholder">
                             <p>네이버 지도를 사용하려면 Client ID를 입력하고 "지도 로드" 버튼을 클릭하세요.</p>
-                            <p class="map-info">Client ID는 <a href="https://www.ncloud.com/" target="_blank">네이버 클라우드 플랫폼</a>에서 발급받을 수 있습니다.</p>
+                            <p class="map-info">Client ID 없이도 식당 목록은 확인할 수 있습니다.</p>
+                            <p class="map-info">Client ID는 <a href="https://www.ncloud.com/" target="_blank">네이버 클라우드 플랫폼</a>에서 무료로 발급받을 수 있습니다.</p>
                         </div>
                     </div>
                     <div id="restaurant-list" class="restaurant-list"></div>

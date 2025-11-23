@@ -349,6 +349,51 @@ body {
     text-decoration: underline;
 }
 
+.guide-box {
+    background: #f8f9fa;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+}
+
+.guide-box h4 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.guide-box ol {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+.guide-box li {
+    margin: 10px 0;
+}
+
+.guide-box ul {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.guide-box code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.guide-note {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    color: #856404;
+}
+
 .restaurant-list {
     margin-top: 20px;
 }

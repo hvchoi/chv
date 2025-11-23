@@ -555,7 +555,11 @@ async function initializeMap(clientId) {
         });
         
         naver.maps.Event.addListener(officeMarker, 'click', () => {
-            infoWindow.open(naverMap, officeMarker);
+            if (infoWindow.getMap()) {
+                infoWindow.close();
+            } else {
+                infoWindow.open(naverMap, officeMarker);
+            }
         });
         
         return true;
@@ -565,6 +569,7 @@ async function initializeMap(clientId) {
             <div class="map-placeholder">
                 <p>지도 로드에 실패했습니다.</p>
                 <p class="map-info">Client ID를 확인해주세요.</p>
+                <p class="map-info">에러: ${error.message}</p>
             </div>
         `;
         return false;
@@ -713,6 +718,9 @@ function getGroupPreferences(memberNames) {
 document.addEventListener('DOMContentLoaded', () => {
     const loadMapBtn = document.getElementById('load-map-btn');
     const clientIdInput = document.getElementById('naver-client-id');
+    const showGuideBtn = document.getElementById('show-guide-btn');
+    const closeGuideBtn = document.getElementById('close-guide-btn');
+    const guideBox = document.getElementById('client-id-guide');
     
     // 저장된 Client ID 불러오기
     const savedClientId = localStorage.getItem('naverClientId');
@@ -720,11 +728,24 @@ document.addEventListener('DOMContentLoaded', () => {
         clientIdInput.value = savedClientId;
     }
     
+    // 가이드 표시/숨기기
+    if (showGuideBtn && guideBox) {
+        showGuideBtn.addEventListener('click', () => {
+            guideBox.style.display = guideBox.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+    
+    if (closeGuideBtn && guideBox) {
+        closeGuideBtn.addEventListener('click', () => {
+            guideBox.style.display = 'none';
+        });
+    }
+    
     if (loadMapBtn) {
         loadMapBtn.addEventListener('click', async () => {
             const clientId = clientIdInput?.value?.trim() || '';
             if (!clientId) {
-                alert('네이버 지도 Client ID를 입력해주세요.');
+                alert('네이버 지도 Client ID를 입력해주세요.\n\n"Client ID 발급 방법" 버튼을 클릭하여 무료 발급 방법을 확인하세요.');
                 return;
             }
             
@@ -768,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error('지도 로드 오류:', error);
-                alert('지도 로드에 실패했습니다. Client ID를 확인해주세요.');
+                alert('지도 로드에 실패했습니다. Client ID를 확인해주세요.\n\n에러: ' + error.message);
                 loadMapBtn.disabled = false;
                 loadMapBtn.textContent = '지도 로드';
             }
