@@ -37,7 +37,7 @@ let currentQuestionIndex = 0;
 let answers = {};
 
 // 삭제 비밀번호 (기본값, 필요시 변경 가능)
-const DELETE_PASSWORD = 'delete123';
+const DELETE_PASSWORD = 'princess';
 
 // 화면 전환 함수
 function showScreen(screenId) {
