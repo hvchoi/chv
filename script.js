@@ -84,20 +84,21 @@ function showCurrentQuestion() {
         
         // 술 질문은 저녁이나 술자리를 선택했을 때만 표시
         let questionIndex = currentQuestionIndex - 1;
-        const question = quizQuestions[questionIndex];
         
         // 술 질문 (q6)인 경우 조건 확인
         if (questionIndex === 6) {
             const mealTimeAnswer = answers.q0;
             if (!mealTimeAnswer || (!mealTimeAnswer.includes('저녁') && !mealTimeAnswer.includes('술자리'))) {
-                // 술 질문을 건너뛰고 다음 질문으로
-                currentQuestionIndex++;
-                if (currentQuestionIndex <= quizQuestions.length) {
-                    showCurrentQuestion();
-                    return;
-                }
+                // 술 질문을 건너뛰고 제출 가능 상태로
+                // 질문을 표시하지 않고 제출 버튼만 표시
+                questionsDiv.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">모든 질문에 답변하셨습니다. 제출 버튼을 클릭해주세요.</p>';
+                updateProgress();
+                updateNavigationButtons();
+                return;
             }
         }
+        
+        const question = quizQuestions[questionIndex];
         
         questionsDiv.innerHTML = `
             <label>${question.question}</label>
@@ -184,8 +185,22 @@ function prevQuestion() {
 
 // 퀴즈 제출
 function submitQuiz() {
-    if (!answers[`q${currentQuestionIndex - 1}`]) {
-        alert('답변을 선택해주세요.');
+    // 술 질문이 필요한지 확인
+    const mealTimeAnswer = answers.q0;
+    const showAlcoholQuestion = mealTimeAnswer && (mealTimeAnswer.includes('저녁') || mealTimeAnswer.includes('술자리'));
+    
+    // 모든 필수 질문에 답변했는지 확인
+    const requiredQuestions = showAlcoholQuestion ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4, 5];
+    const missingAnswers = requiredQuestions.filter(q => !answers[`q${q}`]);
+    
+    if (missingAnswers.length > 0) {
+        alert('모든 질문에 답변해주세요.');
+        return;
+    }
+    
+    // 이름 확인
+    if (!currentEmployee || currentEmployee.trim() === '') {
+        alert('이름을 입력해주세요.');
         return;
     }
     
