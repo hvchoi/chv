@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>동료 점심 호환성 테스트</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
 </head>
 <body>
     <div class="container">
@@ -71,7 +73,16 @@
                 <!-- 식당 추천 -->
                 <div class="result-section">
                     <h3>추천 식당</h3>
-                    <div id="restaurant-map" class="map-container"></div>
+                    <div class="map-controls">
+                        <input type="text" id="naver-client-id" placeholder="네이버 지도 Client ID (선택사항)" class="client-id-input">
+                        <button id="load-map-btn" class="btn btn-secondary">지도 로드</button>
+                    </div>
+                    <div id="restaurant-map" class="map-container">
+                        <div class="map-placeholder">
+                            <p>네이버 지도를 사용하려면 Client ID를 입력하고 "지도 로드" 버튼을 클릭하세요.</p>
+                            <p class="map-info">Client ID는 <a href="https://www.ncloud.com/" target="_blank">네이버 클라우드 플랫폼</a>에서 발급받을 수 있습니다.</p>
+                        </div>
+                    </div>
                     <div id="restaurant-list" class="restaurant-list"></div>
                 </div>
             </div>
