@@ -440,127 +440,90 @@ function displayGroups(groups) {
     groupsDiv.innerHTML = html;
 }
 
-// 네이버 지도 관련 변수
-let naverMap = null;
+// Leaflet 지도 관련 변수
+let leafletMap = null;
 let officeLocation = null;
 let restaurantMarkers = [];
 
-// 네이버 지도 API 동적 로드
-function loadNaverMapAPI(clientId) {
-    return new Promise((resolve, reject) => {
-        if (window.naver && window.naver.maps) {
-            resolve();
-            return;
-        }
-        
-        const script = document.createElement('script');
-        script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}&submodules=geocoder`;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('네이버 지도 API 로드 실패'));
-        document.head.appendChild(script);
-    });
-}
-
-// 맑은소프트 위치 검색
-async function searchOfficeLocation(clientId) {
+// 맑은소프트 위치 검색 (OpenStreetMap Nominatim API 사용 - 무료, API 키 불필요)
+async function searchOfficeLocation() {
     try {
-        const geocoder = new naver.maps.Service.Geocoder();
+        // Nominatim API를 사용하여 주소 검색 (무료, API 키 불필요)
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=맑은소프트&limit=1&countrycodes=kr`);
+        const data = await response.json();
         
-        return new Promise((resolve, reject) => {
-            geocoder.addressSearch('맑은소프트', (status, response) => {
-                if (status === naver.maps.Service.Status.ERROR) {
-                    reject(new Error('주소 검색 실패'));
-                    return;
-                }
-                
-                if (response.result.items.length === 0) {
-                    // 맑은소프트를 찾지 못한 경우, 일반적인 서울 좌표 사용
-                    resolve({
-                        address: '서울시',
-                        point: new naver.maps.LatLng(37.5665, 126.9780)
-                    });
-                    return;
-                }
-                
-                const item = response.result.items[0];
-                resolve({
-                    address: item.address,
-                    point: new naver.maps.LatLng(item.point.y, item.point.x)
-                });
-            });
-        });
+        if (data && data.length > 0) {
+            return {
+                address: data[0].display_name,
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        } else {
+            // 맑은소프트를 찾지 못한 경우, 서울 강남구 좌표 사용
+            return {
+                address: '서울시 강남구 (맑은소프트)',
+                lat: 37.4979,
+                lng: 127.0276
+            };
+        }
     } catch (error) {
         console.error('사무실 위치 검색 오류:', error);
-        // 기본값으로 서울 좌표 반환
+        // 기본값으로 서울 강남구 좌표 반환
         return {
-            address: '서울시',
-            point: new naver.maps.LatLng(37.5665, 126.9780)
+            address: '서울시 강남구 (맑은소프트)',
+            lat: 37.4979,
+            lng: 127.0276
         };
     }
 }
 
 // 근처 식당 검색
-async function searchNearbyRestaurants(center, foodTypes, clientId) {
-    const restaurants = [];
-    
-    // 네이버 Places API를 사용하려면 별도 API 키가 필요하므로
-    // 여기서는 샘플 데이터를 사용하고, 실제로는 Places API를 호출해야 합니다
+async function searchNearbyRestaurants(center, foodTypes) {
+    // 샘플 식당 데이터 (실제로는 Places API를 사용할 수 있지만, 여기서는 샘플 데이터 사용)
     const sampleRestaurants = [
-        { name: '맛있는 한식당', address: '서울시 강남구', type: '한식', lat: 37.5665, lng: 126.9780, price: '10,000-15,000원', rating: 4.5 },
-        { name: '중화요리', address: '서울시 강남구', type: '중식', lat: 37.5675, lng: 126.9790, price: '15,000원 이상', rating: 4.3 },
-        { name: '일본라면', address: '서울시 강남구', type: '일식', lat: 37.5655, lng: 126.9770, price: '5,000-10,000원', rating: 4.7 },
-        { name: '이탈리안 레스토랑', address: '서울시 강남구', type: '양식', lat: 37.5685, lng: 126.9800, price: '15,000원 이상', rating: 4.4 },
-        { name: '분식집', address: '서울시 강남구', type: '분식', lat: 37.5645, lng: 126.9760, price: '5,000원 이하', rating: 4.2 }
+        { name: '맛있는 한식당', address: '서울시 강남구 테헤란로', type: '한식', lat: 37.4979, lng: 127.0276, price: '10,000-15,000원', rating: 4.5 },
+        { name: '중화요리', address: '서울시 강남구 역삼동', type: '중식', lat: 37.4989, lng: 127.0286, price: '15,000원 이상', rating: 4.3 },
+        { name: '일본라면', address: '서울시 강남구 선릉로', type: '일식', lat: 37.4969, lng: 127.0266, price: '5,000-10,000원', rating: 4.7 },
+        { name: '이탈리안 레스토랑', address: '서울시 강남구 봉은사로', type: '양식', lat: 37.4999, lng: 127.0296, price: '15,000원 이상', rating: 4.4 },
+        { name: '분식집', address: '서울시 강남구 논현로', type: '분식', lat: 37.4959, lng: 127.0256, price: '5,000원 이하', rating: 4.2 },
+        { name: '돈까스 전문점', address: '서울시 강남구 학동로', type: '일식', lat: 37.5009, lng: 127.0306, price: '10,000-15,000원', rating: 4.6 },
+        { name: '삼겹살집', address: '서울시 강남구 도곡로', type: '한식', lat: 37.4949, lng: 127.0246, price: '15,000원 이상', rating: 4.5 }
     ];
     
     // 선호 음식 타입에 맞는 식당 필터링
     return sampleRestaurants.filter(rest => 
         foodTypes.length === 0 || foodTypes.includes(rest.type)
-    ).map(rest => ({
-        ...rest,
-        position: new naver.maps.LatLng(rest.lat, rest.lng)
-    }));
+    );
 }
 
-// 지도 초기화 및 표시
-async function initializeMap(clientId) {
+// 지도 초기화 및 표시 (API 키 불필요)
+async function initializeMap() {
     const mapDiv = document.getElementById('restaurant-map');
     
     try {
-        // 네이버 지도 API 로드
-        await loadNaverMapAPI(clientId);
-        
         // 맑은소프트 위치 검색
-        officeLocation = await searchOfficeLocation(clientId);
+        officeLocation = await searchOfficeLocation();
         
-        // 지도 생성
-        naverMap = new naver.maps.Map(mapDiv, {
-            center: officeLocation.point,
-            zoom: 15
-        });
+        // Leaflet 지도 생성 (API 키 불필요)
+        leafletMap = L.map(mapDiv).setView([officeLocation.lat, officeLocation.lng], 15);
+        
+        // OpenStreetMap 타일 레이어 추가 (무료, API 키 불필요)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(leafletMap);
         
         // 사무실 마커 추가
-        const officeMarker = new naver.maps.Marker({
-            position: officeLocation.point,
-            map: naverMap,
-            icon: {
-                content: '<div style="background: #667eea; color: white; padding: 8px 12px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">🏢 맑은소프트</div>',
-                anchor: new naver.maps.Point(50, 20)
-            }
+        const officeIcon = L.divIcon({
+            className: 'office-marker',
+            html: '<div style="background: #667eea; color: white; padding: 8px 12px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap;">🏢 맑은소프트</div>',
+            iconSize: [120, 40],
+            iconAnchor: [60, 20]
         });
         
-        // 정보창 추가
-        const infoWindow = new naver.maps.InfoWindow({
-            content: `<div style="padding: 10px;"><strong>맑은소프트</strong><br>${officeLocation.address}</div>`
-        });
-        
-        naver.maps.Event.addListener(officeMarker, 'click', () => {
-            if (infoWindow.getMap()) {
-                infoWindow.close();
-            } else {
-                infoWindow.open(naverMap, officeMarker);
-            }
-        });
+        const officeMarker = L.marker([officeLocation.lat, officeLocation.lng], { icon: officeIcon })
+            .addTo(leafletMap)
+            .bindPopup(`<strong>맑은소프트</strong><br>${officeLocation.address}`);
         
         return true;
     } catch (error) {
@@ -568,7 +531,6 @@ async function initializeMap(clientId) {
         mapDiv.innerHTML = `
             <div class="map-placeholder">
                 <p>지도 로드에 실패했습니다.</p>
-                <p class="map-info">Client ID를 확인해주세요.</p>
                 <p class="map-info">에러: ${error.message}</p>
             </div>
         `;
@@ -579,50 +541,46 @@ async function initializeMap(clientId) {
 // 식당 마커 표시
 function displayRestaurantMarkers(restaurants) {
     // 기존 마커 제거
-    restaurantMarkers.forEach(marker => marker.setMap(null));
+    restaurantMarkers.forEach(marker => leafletMap.removeLayer(marker));
     restaurantMarkers = [];
     
-    if (!naverMap || !restaurants || restaurants.length === 0) return;
+    if (!leafletMap || !restaurants || restaurants.length === 0) return;
     
-    restaurants.forEach((restaurant, index) => {
-        const marker = new naver.maps.Marker({
-            position: restaurant.position,
-            map: naverMap,
-            title: restaurant.name
+    const bounds = L.latLngBounds([[officeLocation.lat, officeLocation.lng]]);
+    
+    restaurants.forEach((restaurant) => {
+        const restaurantIcon = L.divIcon({
+            className: 'restaurant-marker',
+            html: `<div style="background: #ff6b6b; color: white; padding: 6px 10px; border-radius: 15px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap; font-size: 12px;">🍽️ ${restaurant.name}</div>`,
+            iconSize: [100, 30],
+            iconAnchor: [50, 15]
         });
         
-        const infoWindow = new naver.maps.InfoWindow({
-            content: `
-                <div style="padding: 10px; min-width: 200px;">
+        const marker = L.marker([restaurant.lat, restaurant.lng], { icon: restaurantIcon })
+            .addTo(leafletMap)
+            .bindPopup(`
+                <div style="min-width: 200px;">
                     <strong>${restaurant.name}</strong><br>
                     <span style="color: #666; font-size: 0.9em;">📍 ${restaurant.address}</span><br>
                     <span style="color: #667eea;">🍽️ ${restaurant.type}</span><br>
                     <span style="color: #666;">💰 ${restaurant.price}</span><br>
                     <span style="color: #ffa500;">⭐ ${restaurant.rating}</span>
                 </div>
-            `
-        });
-        
-        naver.maps.Event.addListener(marker, 'click', () => {
-            infoWindow.open(naverMap, marker);
-        });
+            `);
         
         restaurantMarkers.push(marker);
+        bounds.extend([restaurant.lat, restaurant.lng]);
     });
     
     // 모든 마커가 보이도록 지도 범위 조정
     if (restaurantMarkers.length > 0) {
-        const bounds = new naver.maps.LatLngBounds();
-        bounds.extend(officeLocation.point);
-        restaurantMarkers.forEach(marker => bounds.extend(marker.getPosition()));
-        naverMap.fitBounds(bounds);
+        leafletMap.fitBounds(bounds, { padding: [50, 50] });
     }
 }
 
 // 식당 추천 표시
 async function displayRestaurants(groups) {
     const restaurantListDiv = document.getElementById('restaurant-list');
-    const clientId = document.getElementById('naver-client-id')?.value || localStorage.getItem('naverClientId') || '';
     
     // 그룹의 선호도에 맞는 식당 추천
     let html = '';
@@ -634,13 +592,13 @@ async function displayRestaurants(groups) {
         
         // 샘플 식당 데이터
         const sampleRestaurants = [
-            { name: '맛있는 한식당', address: '서울시 강남구 테헤란로', type: '한식', price: '10,000-15,000원', rating: 4.5 },
-            { name: '중화요리', address: '서울시 강남구 역삼동', type: '중식', price: '15,000원 이상', rating: 4.3 },
-            { name: '일본라면', address: '서울시 강남구 선릉로', type: '일식', price: '5,000-10,000원', rating: 4.7 },
-            { name: '이탈리안 레스토랑', address: '서울시 강남구 봉은사로', type: '양식', price: '15,000원 이상', rating: 4.4 },
-            { name: '분식집', address: '서울시 강남구 논현로', type: '분식', price: '5,000원 이하', rating: 4.2 },
-            { name: '돈까스 전문점', address: '서울시 강남구 학동로', type: '일식', price: '10,000-15,000원', rating: 4.6 },
-            { name: '삼겹살집', address: '서울시 강남구 도곡로', type: '한식', price: '15,000원 이상', rating: 4.5 }
+            { name: '맛있는 한식당', address: '서울시 강남구 테헤란로', type: '한식', lat: 37.4979, lng: 127.0276, price: '10,000-15,000원', rating: 4.5 },
+            { name: '중화요리', address: '서울시 강남구 역삼동', type: '중식', lat: 37.4989, lng: 127.0286, price: '15,000원 이상', rating: 4.3 },
+            { name: '일본라면', address: '서울시 강남구 선릉로', type: '일식', lat: 37.4969, lng: 127.0266, price: '5,000-10,000원', rating: 4.7 },
+            { name: '이탈리안 레스토랑', address: '서울시 강남구 봉은사로', type: '양식', lat: 37.4999, lng: 127.0296, price: '15,000원 이상', rating: 4.4 },
+            { name: '분식집', address: '서울시 강남구 논현로', type: '분식', lat: 37.4959, lng: 127.0256, price: '5,000원 이하', rating: 4.2 },
+            { name: '돈까스 전문점', address: '서울시 강남구 학동로', type: '일식', lat: 37.5009, lng: 127.0306, price: '10,000-15,000원', rating: 4.6 },
+            { name: '삼겹살집', address: '서울시 강남구 도곡로', type: '한식', lat: 37.4949, lng: 127.0246, price: '15,000원 이상', rating: 4.5 }
         ];
         
         const recommended = sampleRestaurants.filter(r => 
@@ -676,23 +634,20 @@ async function displayRestaurants(groups) {
     
     restaurantListDiv.innerHTML = html;
     
-    // Client ID가 있으면 지도 표시
-    if (clientId && clientId.trim() !== '') {
-        const mapInitialized = await initializeMap(clientId);
-        if (mapInitialized && officeLocation) {
-            const allFoodTypes = new Set();
-            groups.forEach(group => {
-                const prefs = getGroupPreferences(group.members);
-                prefs.foodTypes.forEach(type => allFoodTypes.add(type));
-            });
-            
-            const restaurants = await searchNearbyRestaurants(
-                officeLocation.point,
-                Array.from(allFoodTypes),
-                clientId
-            );
-            displayRestaurantMarkers(restaurants);
-        }
+    // 지도 자동 표시 (API 키 불필요)
+    const mapInitialized = await initializeMap();
+    if (mapInitialized && officeLocation) {
+        const allFoodTypes = new Set();
+        groups.forEach(group => {
+            const prefs = getGroupPreferences(group.members);
+            prefs.foodTypes.forEach(type => allFoodTypes.add(type));
+        });
+        
+        const restaurants = await searchNearbyRestaurants(
+            { lat: officeLocation.lat, lng: officeLocation.lng },
+            Array.from(allFoodTypes)
+        );
+        displayRestaurantMarkers(restaurants);
     }
 }
 
@@ -714,88 +669,7 @@ function getGroupPreferences(memberNames) {
     };
 }
 
-// 지도 로드 버튼 이벤트
-document.addEventListener('DOMContentLoaded', () => {
-    const loadMapBtn = document.getElementById('load-map-btn');
-    const clientIdInput = document.getElementById('naver-client-id');
-    const showGuideBtn = document.getElementById('show-guide-btn');
-    const closeGuideBtn = document.getElementById('close-guide-btn');
-    const guideBox = document.getElementById('client-id-guide');
-    
-    // 저장된 Client ID 불러오기
-    const savedClientId = localStorage.getItem('naverClientId');
-    if (savedClientId && clientIdInput) {
-        clientIdInput.value = savedClientId;
-    }
-    
-    // 가이드 표시/숨기기
-    if (showGuideBtn && guideBox) {
-        showGuideBtn.addEventListener('click', () => {
-            guideBox.style.display = guideBox.style.display === 'none' ? 'block' : 'none';
-        });
-    }
-    
-    if (closeGuideBtn && guideBox) {
-        closeGuideBtn.addEventListener('click', () => {
-            guideBox.style.display = 'none';
-        });
-    }
-    
-    if (loadMapBtn) {
-        loadMapBtn.addEventListener('click', async () => {
-            const clientId = clientIdInput?.value?.trim() || '';
-            if (!clientId) {
-                alert('네이버 지도 Client ID를 입력해주세요.\n\n"Client ID 발급 방법" 버튼을 클릭하여 무료 발급 방법을 확인하세요.');
-                return;
-            }
-            
-            // Client ID 저장
-            localStorage.setItem('naverClientId', clientId);
-            
-            // 지도 초기화
-            const mapDiv = document.getElementById('restaurant-map');
-            loadMapBtn.disabled = true;
-            loadMapBtn.textContent = '로딩 중...';
-            
-            try {
-                const mapInitialized = await initializeMap(clientId);
-                if (mapInitialized) {
-                    // 현재 그룹이 있으면 식당 마커 표시
-                    if (employees.length > 0) {
-                        const compatibility = calculateAllCompatibility();
-                        const groups = generateGroups(compatibility);
-                        
-                        if (groups.length > 0) {
-                            const allFoodTypes = new Set();
-                            groups.forEach(group => {
-                                const prefs = getGroupPreferences(group.members);
-                                prefs.foodTypes.forEach(type => allFoodTypes.add(type));
-                            });
-                            
-                            const restaurants = await searchNearbyRestaurants(
-                                officeLocation.point,
-                                Array.from(allFoodTypes),
-                                clientId
-                            );
-                            displayRestaurantMarkers(restaurants);
-                        }
-                    }
-                    
-                    loadMapBtn.textContent = '지도 로드 완료';
-                    loadMapBtn.style.background = '#4caf50';
-                } else {
-                    loadMapBtn.disabled = false;
-                    loadMapBtn.textContent = '지도 로드';
-                }
-            } catch (error) {
-                console.error('지도 로드 오류:', error);
-                alert('지도 로드에 실패했습니다. Client ID를 확인해주세요.\n\n에러: ' + error.message);
-                loadMapBtn.disabled = false;
-                loadMapBtn.textContent = '지도 로드';
-            }
-        });
-    }
-});
+// 지도는 자동으로 로드되므로 별도의 이벤트 리스너 불필요
 
 // 이벤트 리스너
 document.getElementById('start-btn').addEventListener('click', initQuiz);

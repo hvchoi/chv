@@ -318,6 +318,13 @@ body {
     margin-bottom: 20px;
     background: #e0e0e0;
     position: relative;
+    z-index: 1;
+}
+
+.office-marker,
+.restaurant-marker {
+    background: transparent !important;
+    border: none !important;
 }
 
 .map-placeholder {
