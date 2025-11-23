@@ -433,6 +433,27 @@ body {
     overflow: hidden;
 }
 
+.restaurant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+}
+
+.restaurant-card::after {
+    content: '👆 클릭하면 네이버 지도에서 확인';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.75em;
+    color: #999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.restaurant-card:hover::after {
+    opacity: 1;
+}
+
 .restaurant-card::before {
     content: '';
     position: absolute;
@@ -575,6 +596,48 @@ body {
     background: #f8f9fa;
     border-radius: 8px;
     display: inline-block;
+}
+
+.restaurant-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn-map,
+.btn-search {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.btn-map {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.btn-map:hover {
+    background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-search {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-search:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
 
 .results-actions {
@@ -758,6 +821,14 @@ body {
 
     .modal-actions .btn {
         width: 100%;
+    }
+
+    .restaurant-actions {
+        flex-direction: column;
+    }
+
+    .restaurant-card::after {
+        display: none;
     }
 }
 

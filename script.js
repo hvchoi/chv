@@ -840,8 +840,10 @@ async function displayRestaurants(groups) {
                     <div class="restaurant-cards">
                         ${sorted.map(rest => {
                             const cost = calculateGroupCost(rest, groupSize);
+                            const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(rest.name + ' ' + rest.address)}`;
+                            const naverSearchUrl = `https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=${encodeURIComponent(rest.name + ' ' + rest.address)}`;
                             return `
-                            <div class="restaurant-card">
+                            <div class="restaurant-card" data-restaurant-name="${rest.name}" data-restaurant-address="${rest.address}">
                                 <div class="restaurant-header">
                                     <h4>${rest.name}</h4>
                                     <div class="rating-badge">⭐ ${rest.rating}</div>
@@ -866,6 +868,14 @@ async function displayRestaurants(groups) {
                                 <div class="tags">
                                     ${rest.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                                 </div>
+                                <div class="restaurant-actions">
+                                    <a href="${naverMapUrl}" target="_blank" class="btn btn-map" onclick="event.stopPropagation();">
+                                        🗺️ 네이버 지도
+                                    </a>
+                                    <a href="${naverSearchUrl}" target="_blank" class="btn btn-search" onclick="event.stopPropagation();">
+                                        🔍 네이버 검색
+                                    </a>
+                                </div>
                             </div>
                         `;
                         }).join('')}
@@ -882,6 +892,19 @@ async function displayRestaurants(groups) {
     }
     
     restaurantListDiv.innerHTML = html;
+    
+    // 식당 카드 클릭 이벤트 추가 (카드 전체 클릭 시 네이버 지도로 이동)
+    document.querySelectorAll('.restaurant-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // 버튼 클릭이 아닌 경우에만 실행
+            if (!e.target.closest('.restaurant-actions') && !e.target.closest('a')) {
+                const restaurantName = card.dataset.restaurantName;
+                const restaurantAddress = card.dataset.restaurantAddress;
+                const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(restaurantName + ' ' + restaurantAddress)}`;
+                window.open(naverMapUrl, '_blank');
+            }
+        });
+    });
     
     // 지도 자동 표시 (API 키 불필요)
     const mapInitialized = await initializeMap();
