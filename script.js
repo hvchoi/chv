@@ -482,46 +482,81 @@ let restaurantMarkers = [];
 // 맑은소프트 위치 검색 (OpenStreetMap Nominatim API 사용 - 무료, API 키 불필요)
 async function searchOfficeLocation() {
     try {
-        // Nominatim API를 사용하여 주소 검색 (무료, API 키 불필요)
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=맑은소프트&limit=1&countrycodes=kr`);
+        // 정확한 주소로 검색
+        const officeAddress = '서울 구로구 디지털로 288';
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(officeAddress)}&limit=1&countrycodes=kr`);
         const data = await response.json();
         
         if (data && data.length > 0) {
             return {
-                address: data[0].display_name,
+                address: officeAddress,
                 lat: parseFloat(data[0].lat),
                 lng: parseFloat(data[0].lon)
             };
         } else {
-            // 맑은소프트를 찾지 못한 경우, 서울 강남구 좌표 사용
+            // 검색 실패 시 구로구 디지털로 288의 대략적인 좌표 사용
             return {
-                address: '서울시 강남구 (맑은소프트)',
-                lat: 37.4979,
-                lng: 127.0276
+                address: officeAddress,
+                lat: 37.4850,
+                lng: 126.8960
             };
         }
     } catch (error) {
         console.error('사무실 위치 검색 오류:', error);
-        // 기본값으로 서울 강남구 좌표 반환
+        // 기본값으로 구로구 디지털로 288 좌표 반환
         return {
-            address: '서울시 강남구 (맑은소프트)',
-            lat: 37.4979,
-            lng: 127.0276
+            address: '서울 구로구 디지털로 288',
+            lat: 37.4850,
+            lng: 126.8960
         };
     }
 }
 
+// 두 지점 간의 거리 계산 (Haversine 공식)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // km
+    
+    return distance;
+}
+
+// 도보 거리 및 시간 계산
+function calculateWalkingDistance(distanceKm) {
+    const walkingSpeed = 4; // km/h (평균 도보 속도)
+    const distanceM = distanceKm * 1000; // 미터로 변환
+    const walkingTimeMinutes = Math.round((distanceKm / walkingSpeed) * 60);
+    
+    return {
+        distance: distanceM,
+        distanceKm: distanceKm,
+        timeMinutes: walkingTimeMinutes,
+        formatted: distanceM < 1000 ? `${Math.round(distanceM)}m` : `${distanceKm.toFixed(1)}km`,
+        timeFormatted: walkingTimeMinutes < 60 ? `${walkingTimeMinutes}분` : `${Math.floor(walkingTimeMinutes / 60)}시간 ${walkingTimeMinutes % 60}분`
+    };
+}
+
 // 근처 식당 검색
 async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPreference) {
-    // 풍부한 식당 데이터 (점심/저녁/술자리 모두 포함)
+    // 구로구 디지털로 288 주변 식당 데이터
+    const officeLat = center.lat || 37.4850;
+    const officeLng = center.lng || 126.8960;
+    
+    // 풍부한 식당 데이터 (구로구 디지털로 288 주변)
     const allRestaurants = [
         // 점심 식당
         { 
             name: '맛있는 한식당', 
-            address: '서울시 강남구 테헤란로', 
+            address: '서울 구로구 디지털로32길', 
             type: '한식', 
-            lat: 37.4979, 
-            lng: 127.0276, 
+            lat: 37.4855, 
+            lng: 126.8970, 
             priceRange: '10,000-15,000원',
             pricePerPerson: 12000,
             rating: 4.5,
@@ -533,10 +568,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '일본라면', 
-            address: '서울시 강남구 선릉로', 
+            address: '서울 구로구 디지털로30길', 
             type: '일식', 
-            lat: 37.4969, 
-            lng: 127.0266, 
+            lat: 37.4845, 
+            lng: 126.8955, 
             priceRange: '5,000-10,000원',
             pricePerPerson: 8000,
             rating: 4.7,
@@ -548,10 +583,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '분식집', 
-            address: '서울시 강남구 논현로', 
+            address: '서울 구로구 디지털로34길', 
             type: '분식', 
-            lat: 37.4959, 
-            lng: 127.0256, 
+            lat: 37.4860, 
+            lng: 126.8965, 
             priceRange: '5,000원 이하',
             pricePerPerson: 5000,
             rating: 4.2,
@@ -563,10 +598,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '돈까스 전문점', 
-            address: '서울시 강남구 학동로', 
+            address: '서울 구로구 디지털로28길', 
             type: '일식', 
-            lat: 37.5009, 
-            lng: 127.0306, 
+            lat: 37.4840, 
+            lng: 126.8950, 
             priceRange: '10,000-15,000원',
             pricePerPerson: 13000,
             rating: 4.6,
@@ -579,10 +614,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         // 저녁 식당
         { 
             name: '삼겹살집', 
-            address: '서울시 강남구 도곡로', 
+            address: '서울 구로구 디지털로26길', 
             type: '한식', 
-            lat: 37.4949, 
-            lng: 127.0246, 
+            lat: 37.4835, 
+            lng: 126.8945, 
             priceRange: '15,000-30,000원',
             pricePerPerson: 25000,
             rating: 4.5,
@@ -594,10 +629,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '중화요리', 
-            address: '서울시 강남구 역삼동', 
+            address: '서울 구로구 디지털로36길', 
             type: '중식', 
-            lat: 37.4989, 
-            lng: 127.0286, 
+            lat: 37.4865, 
+            lng: 126.8975, 
             priceRange: '15,000-30,000원',
             pricePerPerson: 22000,
             rating: 4.3,
@@ -609,10 +644,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '이탈리안 레스토랑', 
-            address: '서울시 강남구 봉은사로', 
+            address: '서울 구로구 디지털로38길', 
             type: '양식', 
-            lat: 37.4999, 
-            lng: 127.0296, 
+            lat: 37.4870, 
+            lng: 126.8980, 
             priceRange: '30,000원 이상',
             pricePerPerson: 45000,
             rating: 4.4,
@@ -625,10 +660,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         // 술자리
         { 
             name: '맥주집', 
-            address: '서울시 강남구 테헤란로', 
+            address: '서울 구로구 디지털로24길', 
             type: '기타', 
-            lat: 37.4975, 
-            lng: 127.0270, 
+            lat: 37.4830, 
+            lng: 126.8940, 
             priceRange: '15,000-30,000원',
             pricePerPerson: 20000,
             rating: 4.8,
@@ -640,10 +675,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '포장마차', 
-            address: '서울시 강남구 역삼동', 
+            address: '서울 구로구 디지털로22길', 
             type: '한식', 
-            lat: 37.4985, 
-            lng: 127.0280, 
+            lat: 37.4825, 
+            lng: 126.8935, 
             priceRange: '10,000-15,000원',
             pricePerPerson: 12000,
             rating: 4.6,
@@ -655,10 +690,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '칵테일 바', 
-            address: '서울시 강남구 선릉로', 
+            address: '서울 구로구 디지털로40길', 
             type: '기타', 
-            lat: 37.4965, 
-            lng: 127.0260, 
+            lat: 37.4875, 
+            lng: 126.8985, 
             priceRange: '30,000원 이상',
             pricePerPerson: 35000,
             rating: 4.7,
@@ -670,10 +705,10 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         },
         { 
             name: '와인바', 
-            address: '서울시 강남구 봉은사로', 
+            address: '서울 구로구 디지털로42길', 
             type: '기타', 
-            lat: 37.4995, 
-            lng: 127.0290, 
+            lat: 37.4880, 
+            lng: 126.8990, 
             priceRange: '30,000원 이상',
             pricePerPerson: 40000,
             rating: 4.5,
@@ -710,7 +745,21 @@ async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPrefe
         return true;
     });
     
-    return filtered;
+    // 각 식당에 거리 정보 추가
+    const restaurantsWithDistance = filtered.map(rest => {
+        const distanceKm = calculateDistance(officeLat, officeLng, rest.lat, rest.lng);
+        const walkingInfo = calculateWalkingDistance(distanceKm);
+        return {
+            ...rest,
+            distanceKm: distanceKm,
+            walkingDistance: walkingInfo
+        };
+    });
+    
+    // 거리순으로 정렬
+    restaurantsWithDistance.sort((a, b) => a.distanceKm - b.distanceKm);
+    
+    return restaurantsWithDistance;
 }
 
 // 지도 초기화 및 표시 (API 키 불필요)
@@ -773,6 +822,9 @@ function displayRestaurantMarkers(restaurants) {
             iconAnchor: [50, 15]
         });
         
+        const walkingInfo = restaurant.walkingDistance ? 
+            `<br><span style="color: #2e7d32; font-size: 0.9em;">🚶 도보: ${restaurant.walkingDistance.formatted} (약 ${restaurant.walkingDistance.timeFormatted})</span>` : '';
+        
         const marker = L.marker([restaurant.lat, restaurant.lng], { icon: restaurantIcon })
             .addTo(leafletMap)
             .bindPopup(`
@@ -781,7 +833,7 @@ function displayRestaurantMarkers(restaurants) {
                     <span style="color: #666; font-size: 0.9em;">📍 ${restaurant.address}</span><br>
                     <span style="color: #667eea;">🍽️ ${restaurant.type}</span><br>
                     <span style="color: #666;">💰 ${restaurant.priceRange}</span><br>
-                    <span style="color: #ffa500;">⭐ ${restaurant.rating}</span><br>
+                    <span style="color: #ffa500;">⭐ ${restaurant.rating}</span>${walkingInfo}<br>
                     <span style="color: #28a745; font-size: 0.9em;">💡 ${restaurant.recommendation}</span>
                 </div>
             `);
@@ -821,16 +873,14 @@ async function displayRestaurants(groups) {
         
         // 식당 검색
         const recommended = await searchNearbyRestaurants(
-            { lat: officeLocation?.lat || 37.4979, lng: officeLocation?.lng || 127.0276 },
+            { lat: officeLocation?.lat || 37.4850, lng: officeLocation?.lng || 126.8960 },
             groupPreferences.foodTypes,
             groupPreferences.mealTime,
             groupPreferences.alcoholPreference
         );
         
-        // 평점과 가격으로 정렬
-        const sorted = recommended
-            .sort((a, b) => b.rating - a.rating)
-            .slice(0, 3);
+        // 거리순으로 정렬 (이미 searchNearbyRestaurants에서 정렬됨)
+        const sorted = recommended.slice(0, 3);
         
         if (sorted.length > 0) {
             html += `
@@ -850,6 +900,12 @@ async function displayRestaurants(groups) {
                                 </div>
                                 <p class="restaurant-address">📍 ${rest.address}</p>
                                 <p class="restaurant-type">🍽️ ${rest.type}</p>
+                                ${rest.walkingDistance ? `
+                                <div class="walking-distance-box">
+                                    <strong>🚶 도보 거리</strong>
+                                    <p>${rest.walkingDistance.formatted} (약 ${rest.walkingDistance.timeFormatted})</p>
+                                </div>
+                                ` : ''}
                                 <div class="price-estimate">
                                     <strong>💰 예상 비용</strong>
                                     <div class="price-details">

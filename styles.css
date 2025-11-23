@@ -504,6 +504,28 @@ body {
     margin: 8px 0;
 }
 
+.walking-distance-box {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #4caf50;
+}
+
+.walking-distance-box strong {
+    color: #2e7d32;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.walking-distance-box p {
+    color: #1b5e20;
+    margin: 0;
+    font-size: 0.95em;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
 .price-estimate {
     background: #f8f9fa;
     padding: 12px;
