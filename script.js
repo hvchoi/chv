@@ -1,12 +1,16 @@
 // 퀴즈 질문 정의
 const quizQuestions = [
     {
+        question: "언제 식사하시나요?",
+        options: ["점심 🍱", "저녁 🍽️", "술자리 🍻", "상관없음"]
+    },
+    {
         question: "오늘 어떤 종류의 음식을 먹고 싶으신가요?",
         options: ["한식", "중식", "일식", "양식", "분식", "기타"]
     },
     {
         question: "예산은 어느 정도인가요?",
-        options: ["5,000원 이하", "5,000-10,000원", "10,000-15,000원", "15,000원 이상"]
+        options: ["5,000원 이하", "5,000-10,000원", "10,000-15,000원", "15,000-30,000원", "30,000원 이상"]
     },
     {
         question: "식사 시간은 얼마나 걸려도 되나요?",
@@ -19,6 +23,10 @@ const quizQuestions = [
     {
         question: "식사 분위기는?",
         options: ["조용한 곳", "적당히 시끄러운 곳", "활기찬 곳", "상관없음"]
+    },
+    {
+        question: "술을 마시고 싶으신가요? (저녁/술자리 선택 시)",
+        options: ["맥주 🍺", "소주 🍶", "와인 🍷", "칵테일 🍸", "안 마실래요", "상관없음"]
     }
 ];
 
@@ -49,7 +57,10 @@ function initQuiz() {
 
 // 진행률 업데이트
 function updateProgress() {
-    const total = quizQuestions.length + 1; // 이름 입력 포함
+    // 술 질문이 표시되는지 확인
+    const mealTimeAnswer = answers.q0;
+    const showAlcoholQuestion = mealTimeAnswer && (mealTimeAnswer.includes('저녁') || mealTimeAnswer.includes('술자리'));
+    const total = showAlcoholQuestion ? quizQuestions.length + 1 : quizQuestions.length; // 이름 입력 포함
     const current = currentQuestionIndex + 1;
     const progress = (current / total) * 100;
     document.getElementById('progress').style.width = progress + '%';
@@ -67,7 +78,24 @@ function showCurrentQuestion() {
         questionsDiv.innerHTML = '';
     } else {
         nameSection.style.display = 'none';
-        const question = quizQuestions[currentQuestionIndex - 1];
+        
+        // 술 질문은 저녁이나 술자리를 선택했을 때만 표시
+        let questionIndex = currentQuestionIndex - 1;
+        const question = quizQuestions[questionIndex];
+        
+        // 술 질문 (q6)인 경우 조건 확인
+        if (questionIndex === 6) {
+            const mealTimeAnswer = answers.q0;
+            if (!mealTimeAnswer || (!mealTimeAnswer.includes('저녁') && !mealTimeAnswer.includes('술자리'))) {
+                // 술 질문을 건너뛰고 다음 질문으로
+                currentQuestionIndex++;
+                if (currentQuestionIndex <= quizQuestions.length) {
+                    showCurrentQuestion();
+                    return;
+                }
+            }
+        }
+        
         questionsDiv.innerHTML = `
             <label>${question.question}</label>
             <div class="quiz-options">
@@ -84,14 +112,14 @@ function showCurrentQuestion() {
             option.addEventListener('click', function() {
                 document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
-                answers[`q${currentQuestionIndex - 1}`] = this.dataset.value;
+                answers[`q${questionIndex}`] = this.dataset.value;
             });
         });
         
         // 이전에 선택한 답이 있으면 표시
-        if (answers[`q${currentQuestionIndex - 1}`]) {
+        if (answers[`q${questionIndex}`]) {
             document.querySelectorAll('.quiz-option').forEach(option => {
-                if (option.dataset.value === answers[`q${currentQuestionIndex - 1}`]) {
+                if (option.dataset.value === answers[`q${questionIndex}`]) {
                     option.classList.add('selected');
                 }
             });
@@ -104,7 +132,10 @@ function showCurrentQuestion() {
 
 // 네비게이션 버튼 업데이트
 function updateNavigationButtons() {
-    const total = quizQuestions.length + 1;
+    const mealTimeAnswer = answers.q0;
+    const showAlcoholQuestion = mealTimeAnswer && (mealTimeAnswer.includes('저녁') || mealTimeAnswer.includes('술자리'));
+    const total = showAlcoholQuestion ? quizQuestions.length + 1 : quizQuestions.length;
+    
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const submitBtn = document.getElementById('submit-btn');
@@ -478,22 +509,205 @@ async function searchOfficeLocation() {
 }
 
 // 근처 식당 검색
-async function searchNearbyRestaurants(center, foodTypes) {
-    // 샘플 식당 데이터 (실제로는 Places API를 사용할 수 있지만, 여기서는 샘플 데이터 사용)
-    const sampleRestaurants = [
-        { name: '맛있는 한식당', address: '서울시 강남구 테헤란로', type: '한식', lat: 37.4979, lng: 127.0276, price: '10,000-15,000원', rating: 4.5 },
-        { name: '중화요리', address: '서울시 강남구 역삼동', type: '중식', lat: 37.4989, lng: 127.0286, price: '15,000원 이상', rating: 4.3 },
-        { name: '일본라면', address: '서울시 강남구 선릉로', type: '일식', lat: 37.4969, lng: 127.0266, price: '5,000-10,000원', rating: 4.7 },
-        { name: '이탈리안 레스토랑', address: '서울시 강남구 봉은사로', type: '양식', lat: 37.4999, lng: 127.0296, price: '15,000원 이상', rating: 4.4 },
-        { name: '분식집', address: '서울시 강남구 논현로', type: '분식', lat: 37.4959, lng: 127.0256, price: '5,000원 이하', rating: 4.2 },
-        { name: '돈까스 전문점', address: '서울시 강남구 학동로', type: '일식', lat: 37.5009, lng: 127.0306, price: '10,000-15,000원', rating: 4.6 },
-        { name: '삼겹살집', address: '서울시 강남구 도곡로', type: '한식', lat: 37.4949, lng: 127.0246, price: '15,000원 이상', rating: 4.5 }
+async function searchNearbyRestaurants(center, foodTypes, mealTime, alcoholPreference) {
+    // 풍부한 식당 데이터 (점심/저녁/술자리 모두 포함)
+    const allRestaurants = [
+        // 점심 식당
+        { 
+            name: '맛있는 한식당', 
+            address: '서울시 강남구 테헤란로', 
+            type: '한식', 
+            lat: 37.4979, 
+            lng: 127.0276, 
+            priceRange: '10,000-15,000원',
+            pricePerPerson: 12000,
+            rating: 4.5,
+            mealTime: ['점심'],
+            alcohol: false,
+            recommendation: '점심 특선 메뉴가 푸짐해요! 🍱',
+            funFact: '직원 할인 10% 적용 가능',
+            tags: ['혼밥 가능', '단체석', '주차 가능']
+        },
+        { 
+            name: '일본라면', 
+            address: '서울시 강남구 선릉로', 
+            type: '일식', 
+            lat: 37.4969, 
+            lng: 127.0266, 
+            priceRange: '5,000-10,000원',
+            pricePerPerson: 8000,
+            rating: 4.7,
+            mealTime: ['점심'],
+            alcohol: false,
+            recommendation: '빠르고 맛있는 라면! 🍜',
+            funFact: '점심 시간대 대기 없음',
+            tags: ['빠른 식사', '혼밥 최적']
+        },
+        { 
+            name: '분식집', 
+            address: '서울시 강남구 논현로', 
+            type: '분식', 
+            lat: 37.4959, 
+            lng: 127.0256, 
+            priceRange: '5,000원 이하',
+            pricePerPerson: 5000,
+            rating: 4.2,
+            mealTime: ['점심'],
+            alcohol: false,
+            recommendation: '가성비 최고! 🍢',
+            funFact: '떡볶이 + 순대 세트 인기',
+            tags: ['저렴', '빠른 식사']
+        },
+        { 
+            name: '돈까스 전문점', 
+            address: '서울시 강남구 학동로', 
+            type: '일식', 
+            lat: 37.5009, 
+            lng: 127.0306, 
+            priceRange: '10,000-15,000원',
+            pricePerPerson: 13000,
+            rating: 4.6,
+            mealTime: ['점심', '저녁'],
+            alcohol: false,
+            recommendation: '바삭한 돈까스가 일품! 🍤',
+            funFact: '밥 무한 리필',
+            tags: ['단체석', '주차 가능']
+        },
+        // 저녁 식당
+        { 
+            name: '삼겹살집', 
+            address: '서울시 강남구 도곡로', 
+            type: '한식', 
+            lat: 37.4949, 
+            lng: 127.0246, 
+            priceRange: '15,000-30,000원',
+            pricePerPerson: 25000,
+            rating: 4.5,
+            mealTime: ['저녁'],
+            alcohol: true,
+            recommendation: '삼겹살과 소주 한잔! 🥩🍶',
+            funFact: '직원들이 자주 가는 곳',
+            tags: ['단체석', '술안주', '야외석']
+        },
+        { 
+            name: '중화요리', 
+            address: '서울시 강남구 역삼동', 
+            type: '중식', 
+            lat: 37.4989, 
+            lng: 127.0286, 
+            priceRange: '15,000-30,000원',
+            pricePerPerson: 22000,
+            rating: 4.3,
+            mealTime: ['저녁'],
+            alcohol: true,
+            recommendation: '짜장면과 탕수육의 조합! 🥢',
+            funFact: '대표 메뉴: 짬뽕',
+            tags: ['단체석', '술안주']
+        },
+        { 
+            name: '이탈리안 레스토랑', 
+            address: '서울시 강남구 봉은사로', 
+            type: '양식', 
+            lat: 37.4999, 
+            lng: 127.0296, 
+            priceRange: '30,000원 이상',
+            pricePerPerson: 45000,
+            rating: 4.4,
+            mealTime: ['저녁'],
+            alcohol: true,
+            recommendation: '로맨틱한 분위기의 파스타와 와인! 🍝🍷',
+            funFact: '데이트 코스로 인기',
+            tags: ['분위기 좋음', '와인', '데이트']
+        },
+        // 술자리
+        { 
+            name: '맥주집', 
+            address: '서울시 강남구 테헤란로', 
+            type: '기타', 
+            lat: 37.4975, 
+            lng: 127.0270, 
+            priceRange: '15,000-30,000원',
+            pricePerPerson: 20000,
+            rating: 4.8,
+            mealTime: ['술자리'],
+            alcohol: true,
+            recommendation: '시원한 맥주와 치킨! 🍺🍗',
+            funFact: '야근 후 단합 회식 장소',
+            tags: ['맥주', '치킨', '단체석', '야외석']
+        },
+        { 
+            name: '포장마차', 
+            address: '서울시 강남구 역삼동', 
+            type: '한식', 
+            lat: 37.4985, 
+            lng: 127.0280, 
+            priceRange: '10,000-15,000원',
+            pricePerPerson: 12000,
+            rating: 4.6,
+            mealTime: ['술자리'],
+            alcohol: true,
+            recommendation: '분위기 있는 포장마차에서 소주 한잔! 🍶',
+            funFact: '야외에서 즐기는 분위기',
+            tags: ['소주', '분위기', '야외석']
+        },
+        { 
+            name: '칵테일 바', 
+            address: '서울시 강남구 선릉로', 
+            type: '기타', 
+            lat: 37.4965, 
+            lng: 127.0260, 
+            priceRange: '30,000원 이상',
+            pricePerPerson: 35000,
+            rating: 4.7,
+            mealTime: ['술자리'],
+            alcohol: true,
+            recommendation: '트렌디한 칵테일과 안주! 🍸',
+            funFact: '인스타 감성 폭발',
+            tags: ['칵테일', '분위기', '데이트']
+        },
+        { 
+            name: '와인바', 
+            address: '서울시 강남구 봉은사로', 
+            type: '기타', 
+            lat: 37.4995, 
+            lng: 127.0290, 
+            priceRange: '30,000원 이상',
+            pricePerPerson: 40000,
+            rating: 4.5,
+            mealTime: ['술자리'],
+            alcohol: true,
+            recommendation: '고급스러운 와인과 치즈! 🍷🧀',
+            funFact: '와인 전문가 추천',
+            tags: ['와인', '고급', '데이트']
+        }
     ];
     
-    // 선호 음식 타입에 맞는 식당 필터링
-    return sampleRestaurants.filter(rest => 
-        foodTypes.length === 0 || foodTypes.includes(rest.type)
-    );
+    // 필터링: 음식 타입, 식사 시간대, 술 선호도
+    let filtered = allRestaurants.filter(rest => {
+        // 음식 타입 필터
+        if (foodTypes.length > 0 && !foodTypes.includes(rest.type)) {
+            return false;
+        }
+        
+        // 식사 시간대 필터
+        if (mealTime && !rest.mealTime.includes(mealTime)) {
+            return false;
+        }
+        
+        // 술 선호도 필터
+        if (alcoholPreference) {
+            if (alcoholPreference === '안 마실래요' && rest.alcohol) {
+                return false;
+            }
+            if (alcoholPreference !== '안 마실래요' && alcoholPreference !== '상관없음' && !rest.alcohol) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    return filtered;
 }
 
 // 지도 초기화 및 표시 (API 키 불필요)
@@ -563,8 +777,9 @@ function displayRestaurantMarkers(restaurants) {
                     <strong>${restaurant.name}</strong><br>
                     <span style="color: #666; font-size: 0.9em;">📍 ${restaurant.address}</span><br>
                     <span style="color: #667eea;">🍽️ ${restaurant.type}</span><br>
-                    <span style="color: #666;">💰 ${restaurant.price}</span><br>
-                    <span style="color: #ffa500;">⭐ ${restaurant.rating}</span>
+                    <span style="color: #666;">💰 ${restaurant.priceRange}</span><br>
+                    <span style="color: #ffa500;">⭐ ${restaurant.rating}</span><br>
+                    <span style="color: #28a745; font-size: 0.9em;">💡 ${restaurant.recommendation}</span>
                 </div>
             `);
         
@@ -578,6 +793,16 @@ function displayRestaurantMarkers(restaurants) {
     }
 }
 
+// 그룹별 예상 비용 계산
+function calculateGroupCost(restaurant, groupSize) {
+    const totalCost = restaurant.pricePerPerson * groupSize;
+    return {
+        total: totalCost,
+        perPerson: restaurant.pricePerPerson,
+        formatted: totalCost.toLocaleString('ko-KR') + '원'
+    };
+}
+
 // 식당 추천 표시
 async function displayRestaurants(groups) {
     const restaurantListDiv = document.getElementById('restaurant-list');
@@ -589,47 +814,68 @@ async function displayRestaurants(groups) {
     for (let groupIndex = 0; groupIndex < Math.min(groups.length, 3); groupIndex++) {
         const group = groups[groupIndex];
         const groupPreferences = getGroupPreferences(group.members);
+        const groupSize = group.members.length;
         
-        // 샘플 식당 데이터
-        const sampleRestaurants = [
-            { name: '맛있는 한식당', address: '서울시 강남구 테헤란로', type: '한식', lat: 37.4979, lng: 127.0276, price: '10,000-15,000원', rating: 4.5 },
-            { name: '중화요리', address: '서울시 강남구 역삼동', type: '중식', lat: 37.4989, lng: 127.0286, price: '15,000원 이상', rating: 4.3 },
-            { name: '일본라면', address: '서울시 강남구 선릉로', type: '일식', lat: 37.4969, lng: 127.0266, price: '5,000-10,000원', rating: 4.7 },
-            { name: '이탈리안 레스토랑', address: '서울시 강남구 봉은사로', type: '양식', lat: 37.4999, lng: 127.0296, price: '15,000원 이상', rating: 4.4 },
-            { name: '분식집', address: '서울시 강남구 논현로', type: '분식', lat: 37.4959, lng: 127.0256, price: '5,000원 이하', rating: 4.2 },
-            { name: '돈까스 전문점', address: '서울시 강남구 학동로', type: '일식', lat: 37.5009, lng: 127.0306, price: '10,000-15,000원', rating: 4.6 },
-            { name: '삼겹살집', address: '서울시 강남구 도곡로', type: '한식', lat: 37.4949, lng: 127.0246, price: '15,000원 이상', rating: 4.5 }
-        ];
-        
-        const recommended = sampleRestaurants.filter(r => 
-            groupPreferences.foodTypes.length === 0 || 
-            groupPreferences.foodTypes.includes(r.type)
+        // 식당 검색
+        const recommended = await searchNearbyRestaurants(
+            { lat: officeLocation?.lat || 37.4979, lng: officeLocation?.lng || 127.0276 },
+            groupPreferences.foodTypes,
+            groupPreferences.mealTime,
+            groupPreferences.alcoholPreference
         );
         
-        if (recommended.length > 0) {
+        // 평점과 가격으로 정렬
+        const sorted = recommended
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 3);
+        
+        if (sorted.length > 0) {
             html += `
                 <div class="restaurant-section">
-                    <h4>그룹 ${groupIndex + 1} 추천 식당</h4>
+                    <h4>그룹 ${groupIndex + 1} 추천 식당 (${group.members.join(', ')})</h4>
+                    <p class="group-info">${groupPreferences.mealTime} 식사 | ${groupPreferences.alcoholPreference !== '안 마실래요' && groupPreferences.alcoholPreference !== '상관없음' ? groupPreferences.alcoholPreference : '술 없음'}</p>
                     <div class="restaurant-cards">
-                        ${recommended.slice(0, 3).map(rest => `
+                        ${sorted.map(rest => {
+                            const cost = calculateGroupCost(rest, groupSize);
+                            return `
                             <div class="restaurant-card">
-                                <h4>${rest.name}</h4>
-                                <p>📍 ${rest.address}</p>
-                                <p>🍽️ ${rest.type}</p>
-                                <p>💰 ${rest.price}</p>
-                                <p>⭐ ${rest.rating}</p>
+                                <div class="restaurant-header">
+                                    <h4>${rest.name}</h4>
+                                    <div class="rating-badge">⭐ ${rest.rating}</div>
+                                </div>
+                                <p class="restaurant-address">📍 ${rest.address}</p>
+                                <p class="restaurant-type">🍽️ ${rest.type}</p>
+                                <div class="price-estimate">
+                                    <strong>💰 예상 비용</strong>
+                                    <div class="price-details">
+                                        <span>1인당: ${rest.priceRange}</span>
+                                        <span>${groupSize}명 총액: 약 ${cost.formatted}</span>
+                                    </div>
+                                </div>
+                                <div class="recommendation-box">
+                                    <strong>💡 추천 이유</strong>
+                                    <p>${rest.recommendation}</p>
+                                </div>
+                                <div class="fun-fact-box">
+                                    <strong>🎉 재미있는 사실</strong>
+                                    <p>${rest.funFact}</p>
+                                </div>
+                                <div class="tags">
+                                    ${rest.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
                             </div>
-                        `).join('')}
+                        `;
+                        }).join('')}
                     </div>
                 </div>
             `;
             
-            allRestaurants.push(...recommended);
+            allRestaurants.push(...sorted);
         }
     }
     
     if (html === '') {
-        html = '<p>추천할 식당이 없습니다.</p>';
+        html = '<p>추천할 식당이 없습니다. 다른 선호도를 선택해보세요!</p>';
     }
     
     restaurantListDiv.innerHTML = html;
@@ -637,17 +883,7 @@ async function displayRestaurants(groups) {
     // 지도 자동 표시 (API 키 불필요)
     const mapInitialized = await initializeMap();
     if (mapInitialized && officeLocation) {
-        const allFoodTypes = new Set();
-        groups.forEach(group => {
-            const prefs = getGroupPreferences(group.members);
-            prefs.foodTypes.forEach(type => allFoodTypes.add(type));
-        });
-        
-        const restaurants = await searchNearbyRestaurants(
-            { lat: officeLocation.lat, lng: officeLocation.lng },
-            Array.from(allFoodTypes)
-        );
-        displayRestaurantMarkers(restaurants);
+        displayRestaurantMarkers(allRestaurants);
     }
 }
 
@@ -655,17 +891,46 @@ async function displayRestaurants(groups) {
 function getGroupPreferences(memberNames) {
     const members = employees.filter(emp => memberNames.includes(emp.name));
     
+    const mealTimes = new Set();
     const foodTypes = new Set();
     const priceRanges = new Set();
+    const alcoholPreferences = new Set();
     
     members.forEach(member => {
-        if (member.answers.q0) foodTypes.add(member.answers.q0);
-        if (member.answers.q1) priceRanges.add(member.answers.q1);
+        if (member.answers.q0) {
+            const mealTime = member.answers.q0;
+            if (mealTime.includes('점심')) mealTimes.add('점심');
+            if (mealTime.includes('저녁')) mealTimes.add('저녁');
+            if (mealTime.includes('술자리')) mealTimes.add('술자리');
+        }
+        if (member.answers.q1) foodTypes.add(member.answers.q1);
+        if (member.answers.q2) priceRanges.add(member.answers.q2);
+        if (member.answers.q6) alcoholPreferences.add(member.answers.q6);
     });
     
+    // 가장 많이 선택된 식사 시간대
+    const mealTimeCounts = {};
+    mealTimes.forEach(time => {
+        mealTimeCounts[time] = (mealTimeCounts[time] || 0) + 1;
+    });
+    const primaryMealTime = Object.keys(mealTimeCounts).reduce((a, b) => 
+        mealTimeCounts[a] > mealTimeCounts[b] ? a : b, '점심'
+    );
+    
+    // 가장 많이 선택된 술 선호도
+    const alcoholCounts = {};
+    alcoholPreferences.forEach(pref => {
+        alcoholCounts[pref] = (alcoholCounts[pref] || 0) + 1;
+    });
+    const primaryAlcohol = Object.keys(alcoholCounts).reduce((a, b) => 
+        alcoholCounts[a] > alcoholCounts[b] ? a : b, '상관없음'
+    );
+    
     return {
+        mealTime: primaryMealTime,
         foodTypes: Array.from(foodTypes),
-        priceRange: Array.from(priceRanges)
+        priceRange: Array.from(priceRanges),
+        alcoholPreference: primaryAlcohol
     };
 }
 
