@@ -36,6 +36,9 @@ let currentEmployee = null;
 let currentQuestionIndex = 0;
 let answers = {};
 
+// 삭제 비밀번호 (기본값, 필요시 변경 가능)
+const DELETE_PASSWORD = 'delete123';
+
 // 화면 전환 함수
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(screen => {
@@ -934,7 +937,53 @@ function getGroupPreferences(memberNames) {
     };
 }
 
-// 지도는 자동으로 로드되므로 별도의 이벤트 리스너 불필요
+// 데이터 삭제 함수
+function deleteAllData() {
+    localStorage.removeItem('lunchEmployees');
+    employees = [];
+    alert('모든 데이터가 삭제되었습니다.');
+    showScreen('main-screen');
+}
+
+// 비밀번호 모달 열기
+function openPasswordModal() {
+    const modal = document.getElementById('password-modal');
+    const passwordInput = document.getElementById('delete-password');
+    modal.classList.add('active');
+    passwordInput.value = '';
+    passwordInput.focus();
+}
+
+// 비밀번호 모달 닫기
+function closePasswordModal() {
+    const modal = document.getElementById('password-modal');
+    const passwordInput = document.getElementById('delete-password');
+    modal.classList.remove('active');
+    passwordInput.value = '';
+}
+
+// 비밀번호 확인 및 삭제
+function confirmDelete() {
+    const passwordInput = document.getElementById('delete-password');
+    const enteredPassword = passwordInput.value.trim();
+    
+    if (!enteredPassword) {
+        alert('비밀번호를 입력해주세요.');
+        passwordInput.focus();
+        return;
+    }
+    
+    if (enteredPassword === DELETE_PASSWORD) {
+        if (confirm('정말로 모든 데이터를 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
+            deleteAllData();
+            closePasswordModal();
+        }
+    } else {
+        alert('비밀번호가 일치하지 않습니다.');
+        passwordInput.value = '';
+        passwordInput.focus();
+    }
+}
 
 // 이벤트 리스너
 document.getElementById('start-btn').addEventListener('click', initQuiz);
@@ -945,11 +994,31 @@ document.getElementById('view-results-btn').addEventListener('click', () => {
     }
     showResults();
 });
+document.getElementById('delete-data-btn').addEventListener('click', openPasswordModal);
 document.getElementById('next-btn').addEventListener('click', nextQuestion);
 document.getElementById('prev-btn').addEventListener('click', prevQuestion);
 document.getElementById('submit-btn').addEventListener('click', submitQuiz);
 document.getElementById('new-test-btn').addEventListener('click', initQuiz);
 document.getElementById('back-to-main-btn').addEventListener('click', () => showScreen('main-screen'));
+
+// 모달 이벤트 리스너
+document.getElementById('confirm-delete-btn').addEventListener('click', confirmDelete);
+document.getElementById('cancel-delete-btn').addEventListener('click', closePasswordModal);
+document.querySelector('.modal-close').addEventListener('click', closePasswordModal);
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('password-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'password-modal') {
+        closePasswordModal();
+    }
+});
+
+// Enter 키로 삭제 확인
+document.getElementById('delete-password').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        confirmDelete();
+    }
+});
 
 // 초기화
 showCurrentQuestion();

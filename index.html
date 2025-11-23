@@ -18,6 +18,7 @@
             <p class="subtitle">점심부터 저녁, 술자리까지! 오늘 누구와 함께 식사할까요? 🍻</p>
             <button id="start-btn" class="btn btn-primary">테스트 시작하기</button>
             <button id="view-results-btn" class="btn btn-secondary">결과 보기</button>
+            <button id="delete-data-btn" class="btn btn-danger">데이터 삭제</button>
         </div>
 
         <!-- 퀴즈 화면 -->
@@ -82,6 +83,24 @@
             <div class="results-actions">
                 <button id="new-test-btn" class="btn btn-primary">새 테스트하기</button>
                 <button id="back-to-main-btn" class="btn btn-secondary">메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 비밀번호 확인 모달 -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>🔒 데이터 삭제 확인</h3>
+            <p class="modal-warning">⚠️ 모든 직원 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</p>
+            <div class="password-input-group">
+                <label for="delete-password">비밀번호를 입력하세요:</label>
+                <input type="password" id="delete-password" placeholder="비밀번호 입력" class="password-input">
+                <p class="password-hint">기본 비밀번호: <code>delete123</code></p>
+            </div>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="btn btn-danger">삭제하기</button>
+                <button id="cancel-delete-btn" class="btn btn-secondary">취소</button>
             </div>
         </div>
     </div>
