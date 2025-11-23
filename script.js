@@ -51,6 +51,7 @@ function showScreen(screenId) {
 function initQuiz() {
     currentQuestionIndex = 0;
     answers = {};
+    currentEmployee = null;
     document.getElementById('employee-name').value = '';
     document.getElementById('name-input-section').style.display = 'block';
     document.getElementById('quiz-questions').innerHTML = '';
@@ -185,29 +186,37 @@ function prevQuestion() {
 
 // 퀴즈 제출
 function submitQuiz() {
-    // 술 질문이 필요한지 확인
-    const mealTimeAnswer = answers.q0;
-    const showAlcoholQuestion = mealTimeAnswer && (mealTimeAnswer.includes('저녁') || mealTimeAnswer.includes('술자리'));
-    
-    // 모든 필수 질문에 답변했는지 확인
-    const requiredQuestions = showAlcoholQuestion ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4, 5];
-    const missingAnswers = requiredQuestions.filter(q => !answers[`q${q}`]);
-    
-    if (missingAnswers.length > 0) {
-        alert('모든 질문에 답변해주세요.');
-        return;
-    }
-    
     // 이름 확인
     if (!currentEmployee || currentEmployee.trim() === '') {
         alert('이름을 입력해주세요.');
         return;
     }
     
+    // 술 질문이 필요한지 확인
+    const mealTimeAnswer = answers.q0;
+    const showAlcoholQuestion = mealTimeAnswer && (mealTimeAnswer.includes('저녁') || mealTimeAnswer.includes('술자리'));
+    
+    // 모든 필수 질문에 답변했는지 확인
+    const requiredQuestions = showAlcoholQuestion ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4, 5];
+    const missingAnswers = requiredQuestions.filter(q => {
+        // q6(술 질문)은 조건부이므로 특별 처리
+        if (q === 6 && !showAlcoholQuestion) {
+            return false; // 술 질문이 필요 없으면 체크하지 않음
+        }
+        return !answers[`q${q}`] || answers[`q${q}`] === undefined || answers[`q${q}`] === null;
+    });
+    
+    if (missingAnswers.length > 0) {
+        console.log('Missing answers:', missingAnswers);
+        console.log('Current answers:', answers);
+        alert('모든 질문에 답변해주세요. (답변하지 않은 질문: ' + missingAnswers.map(q => `질문 ${q + 1}`).join(', ') + ')');
+        return;
+    }
+    
     // 직원 데이터 저장
     const employeeData = {
         name: currentEmployee,
-        answers: answers,
+        answers: { ...answers }, // 새 객체로 복사하여 저장
         timestamp: Date.now()
     };
     
