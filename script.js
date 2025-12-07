@@ -34,14 +34,46 @@ const lessonsData = {
             },
             {
                 id: 'basics-3',
-                title: '숫자',
+                title: '숫자 1-10',
                 description: '1부터 10까지의 숫자',
                 words: [
                     { indonesian: 'Satu', pronunciation: '[사뚜]', korean: '하나', example: 'Satu buku (책 한 권)' },
                     { indonesian: 'Dua', pronunciation: '[두아]', korean: '둘', example: 'Dua orang (두 사람)' },
                     { indonesian: 'Tiga', pronunciation: '[띠가]', korean: '셋', example: 'Tiga hari (삼일)' },
                     { indonesian: 'Empat', pronunciation: '[음빳]', korean: '넷', example: 'Empat tahun (사년)' },
-                    { indonesian: 'Lima', pronunciation: '[리마]', korean: '다섯', example: 'Lima ribu (오천)' }
+                    { indonesian: 'Lima', pronunciation: '[리마]', korean: '다섯', example: 'Lima ribu (오천)' },
+                    { indonesian: 'Enam', pronunciation: '[으남]', korean: '여섯', example: 'Enam bulan (육개월)' },
+                    { indonesian: 'Tujuh', pronunciation: '[뚜주]', korean: '일곱', example: 'Tujuh hari (칠일)' },
+                    { indonesian: 'Delapan', pronunciation: '[드라빤]', korean: '여덟', example: 'Delapan jam (팔시간)' },
+                    { indonesian: 'Sembilan', pronunciation: '[슴빌란]', korean: '아홉', example: 'Sembilan tahun (구년)' },
+                    { indonesian: 'Sepuluh', pronunciation: '[스뿔루]', korean: '열', example: 'Sepuluh orang (십명)' }
+                ]
+            },
+            {
+                id: 'basics-4',
+                title: '질문하기',
+                description: '질문하는 방법',
+                words: [
+                    { indonesian: 'Apa', pronunciation: '[아빠]', korean: '무엇', example: 'Apa ini? (이것은 무엇인가요?)' },
+                    { indonesian: 'Siapa', pronunciation: '[시아빠]', korean: '누구', example: 'Siapa nama Anda? (당신의 이름은 무엇인가요?)' },
+                    { indonesian: 'Di mana', pronunciation: '[디 마나]', korean: '어디', example: 'Di mana toilet? (화장실이 어디인가요?)' },
+                    { indonesian: 'Kapan', pronunciation: '[까빤]', korean: '언제', example: 'Kapan Anda datang? (언제 오셨나요?)' },
+                    { indonesian: 'Bagaimana', pronunciation: '[바가이마나]', korean: '어떻게', example: 'Bagaimana kabar Anda? (어떻게 지내세요?)' },
+                    { indonesian: 'Berapa', pronunciation: '[뻬라빠]', korean: '얼마', example: 'Berapa harga? (얼마인가요?)' }
+                ]
+            },
+            {
+                id: 'basics-5',
+                title: '시간 표현',
+                description: '시간과 관련된 표현',
+                words: [
+                    { indonesian: 'Sekarang', pronunciation: '[스까랑]', korean: '지금', example: 'Sekarang jam berapa? (지금 몇 시인가요?)' },
+                    { indonesian: 'Hari ini', pronunciation: '[하리 이니]', korean: '오늘', example: 'Hari ini cuaca bagus. (오늘 날씨가 좋습니다.)' },
+                    { indonesian: 'Kemarin', pronunciation: '[끄마린]', korean: '어제', example: 'Kemarin saya pergi ke pasar. (어제 저는 시장에 갔습니다.)' },
+                    { indonesian: 'Besok', pronunciation: '[뻬속]', korean: '내일', example: 'Besok saya akan pergi. (내일 갈 예정입니다.)' },
+                    { indonesian: 'Pagi', pronunciation: '[빠기]', korean: '아침', example: 'Saya bangun pagi. (저는 아침에 일어납니다.)' },
+                    { indonesian: 'Siang', pronunciation: '[시앙]', korean: '점심', example: 'Makan siang (점심 식사)' },
+                    { indonesian: 'Malam', pronunciation: '[말람]', korean: '저녁', example: 'Malam hari (저녁 시간)' }
                 ]
             }
         ]
@@ -69,7 +101,63 @@ const lessonsData = {
                 words: [
                     { indonesian: 'Saya senang', pronunciation: '[사야 스낭]', korean: '저는 기쁩니다', example: 'Saya senang hari ini. (오늘 기분이 좋습니다.)' },
                     { indonesian: 'Saya sedih', pronunciation: '[사야 스디]', korean: '저는 슬픕니다', example: 'Saya sedih mendengar berita itu. (그 소식을 듣고 슬픕니다.)' },
-                    { indonesian: 'Saya lelah', pronunciation: '[사야 르라]', korean: '저는 피곤합니다', example: 'Saya lelah hari ini. (오늘 피곤합니다.)' }
+                    { indonesian: 'Saya lelah', pronunciation: '[사야 르라]', korean: '저는 피곤합니다', example: 'Saya lelah hari ini. (오늘 피곤합니다.)' },
+                    { indonesian: 'Saya bahagia', pronunciation: '[사야 바하기아]', korean: '저는 행복합니다', example: 'Saya sangat bahagia. (저는 매우 행복합니다.)' },
+                    { indonesian: 'Saya marah', pronunciation: '[사야 마라]', korean: '저는 화가 납니다', example: 'Saya marah karena itu. (그 때문에 화가 납니다.)' },
+                    { indonesian: 'Saya takut', pronunciation: '[사야 따쿠트]', korean: '저는 무서워합니다', example: 'Saya takut gelap. (저는 어둠을 무서워합니다.)' }
+                ]
+            },
+            {
+                id: 'daily-3',
+                title: '가족',
+                description: '가족 구성원 호칭',
+                words: [
+                    { indonesian: 'Keluarga', pronunciation: '[끄루아르가]', korean: '가족', example: 'Keluarga saya (제 가족)' },
+                    { indonesian: 'Ayah', pronunciation: '[아야]', korean: '아버지', example: 'Ayah saya bekerja. (제 아버지는 일하십니다.)' },
+                    { indonesian: 'Ibu', pronunciation: '[이부]', korean: '어머니', example: 'Ibu saya memasak. (제 어머니는 요리하십니다.)' },
+                    { indonesian: 'Kakak', pronunciation: '[까깍]', korean: '형/누나/언니/오빠', example: 'Kakak saya di Jakarta. (제 형/누나는 자카르타에 있습니다.)' },
+                    { indonesian: 'Adik', pronunciation: '[아딕]', korean: '동생', example: 'Adik saya masih sekolah. (제 동생은 아직 학교에 다닙니다.)' },
+                    { indonesian: 'Suami', pronunciation: '[수아미]', korean: '남편', example: 'Suami saya dokter. (제 남편은 의사입니다.)' },
+                    { indonesian: 'Istri', pronunciation: '[이스트리]', korean: '아내', example: 'Istri saya guru. (제 아내는 교사입니다.)' }
+                ]
+            },
+            {
+                id: 'daily-4',
+                title: '날씨',
+                description: '날씨에 관한 표현',
+                words: [
+                    { indonesian: 'Cuaca', pronunciation: '[추아짜]', korean: '날씨', example: 'Cuaca hari ini bagus. (오늘 날씨가 좋습니다.)' },
+                    { indonesian: 'Panas', pronunciation: '[빠나스]', korean: '덥다', example: 'Hari ini sangat panas. (오늘 매우 덥습니다.)' },
+                    { indonesian: 'Dingin', pronunciation: '[딩인]', korean: '춥다', example: 'Malam ini dingin. (오늘 밤은 춥습니다.)' },
+                    { indonesian: 'Hujan', pronunciation: '[후잔]', korean: '비', example: 'Hari ini hujan. (오늘 비가 옵니다.)' },
+                    { indonesian: 'Mendung', pronunciation: '[믄둥]', korean: '흐리다', example: 'Langit mendung. (하늘이 흐립니다.)' },
+                    { indonesian: 'Cerah', pronunciation: '[체라]', korean: '맑다', example: 'Cuaca cerah. (날씨가 맑습니다.)' }
+                ]
+            },
+            {
+                id: 'daily-5',
+                title: '취미',
+                description: '취미와 관심사 표현',
+                words: [
+                    { indonesian: 'Hobi', pronunciation: '[호비]', korean: '취미', example: 'Apa hobi Anda? (취미가 무엇인가요?)' },
+                    { indonesian: 'Membaca', pronunciation: '[음바짜]', korean: '읽기', example: 'Saya suka membaca. (저는 읽기를 좋아합니다.)' },
+                    { indonesian: 'Menonton', pronunciation: '[므논톤]', korean: '보기', example: 'Saya suka menonton film. (저는 영화 보기를 좋아합니다.)' },
+                    { indonesian: 'Olahraga', pronunciation: '[올라그라]', korean: '운동', example: 'Saya suka olahraga. (저는 운동을 좋아합니다.)' },
+                    { indonesian: 'Musik', pronunciation: '[무식]', korean: '음악', example: 'Saya suka musik. (저는 음악을 좋아합니다.)' },
+                    { indonesian: 'Memasak', pronunciation: '[므마삭]', korean: '요리하기', example: 'Hobi saya memasak. (제 취미는 요리입니다.)' }
+                ]
+            },
+            {
+                id: 'daily-6',
+                title: '일상 활동',
+                description: '일상에서 하는 활동들',
+                words: [
+                    { indonesian: 'Bangun', pronunciation: '[방운]', korean: '일어나다', example: 'Saya bangun pagi. (저는 아침에 일어납니다.)' },
+                    { indonesian: 'Mandi', pronunciation: '[만디]', korean: '씻다', example: 'Saya mandi setiap pagi. (저는 매일 아침 씻습니다.)' },
+                    { indonesian: 'Makan', pronunciation: '[마깐]', korean: '먹다', example: 'Saya makan nasi. (저는 밥을 먹습니다.)' },
+                    { indonesian: 'Bekerja', pronunciation: '[뻬르케르자]', korean: '일하다', example: 'Saya bekerja di kantor. (저는 사무실에서 일합니다.)' },
+                    { indonesian: 'Tidur', pronunciation: '[띠두르]', korean: '자다', example: 'Saya tidur malam. (저는 밤에 잡니다.)' },
+                    { indonesian: 'Belajar', pronunciation: '[뻬라자르]', korean: '공부하다', example: 'Saya belajar bahasa Indonesia. (저는 인도네시아어를 공부합니다.)' }
                 ]
             }
         ]
@@ -97,7 +185,49 @@ const lessonsData = {
                 words: [
                     { indonesian: 'Kamar', pronunciation: '[까마르]', korean: '방', example: 'Saya mau kamar. (방을 원합니다.)' },
                     { indonesian: 'Check in', pronunciation: '[첵 인]', korean: '체크인', example: 'Saya mau check in. (체크인하고 싶습니다.)' },
-                    { indonesian: 'Check out', pronunciation: '[첵 아웃]', korean: '체크아웃', example: 'Saya mau check out. (체크아웃하고 싶습니다.)' }
+                    { indonesian: 'Check out', pronunciation: '[첵 아웃]', korean: '체크아웃', example: 'Saya mau check out. (체크아웃하고 싶습니다.)' },
+                    { indonesian: 'Hotel', pronunciation: '[호텔]', korean: '호텔', example: 'Hotel ini bagus. (이 호텔은 좋습니다.)' },
+                    { indonesian: 'Reservasi', pronunciation: '[레세르바시]', korean: '예약', example: 'Saya punya reservasi. (저는 예약이 있습니다.)' },
+                    { indonesian: 'Kunci', pronunciation: '[쿤치]', korean: '열쇠', example: 'Kunci kamar (방 열쇠)' }
+                ]
+            },
+            {
+                id: 'travel-3',
+                title: '방향 물어보기',
+                description: '길을 물어보는 표현',
+                words: [
+                    { indonesian: 'Jalan', pronunciation: '[잘란]', korean: '길', example: 'Jalan ini ke mana? (이 길은 어디로 가나요?)' },
+                    { indonesian: 'Kiri', pronunciation: '[키리]', korean: '왼쪽', example: 'Belok kiri (왼쪽으로 돌다)' },
+                    { indonesian: 'Kanan', pronunciation: '[까난]', korean: '오른쪽', example: 'Belok kanan (오른쪽으로 돌다)' },
+                    { indonesian: 'Lurus', pronunciation: '[루루스]', korean: '직진', example: 'Jalan lurus (직진하세요)' },
+                    { indonesian: 'Jauh', pronunciation: '[자우]', korean: '멀다', example: 'Jauh dari sini? (여기서 멀어요?)' },
+                    { indonesian: 'Dekat', pronunciation: '[드깟]', korean: '가깝다', example: 'Dekat dari sini. (여기서 가깝습니다.)' }
+                ]
+            },
+            {
+                id: 'travel-4',
+                title: '관광지',
+                description: '관광지와 관련된 표현',
+                words: [
+                    { indonesian: 'Wisata', pronunciation: '[위사따]', korean: '관광', example: 'Tempat wisata (관광지)' },
+                    { indonesian: 'Pantai', pronunciation: '[빤따이]', korean: '해변', example: 'Pantai ini indah. (이 해변은 아름답습니다.)' },
+                    { indonesian: 'Gunung', pronunciation: '[구눙]', korean: '산', example: 'Saya naik gunung. (저는 산에 올라갑니다.)' },
+                    { indonesian: 'Museum', pronunciation: '[무세움]', korean: '박물관', example: 'Museum ini menarik. (이 박물관은 흥미롭습니다.)' },
+                    { indonesian: 'Foto', pronunciation: '[포토]', korean: '사진', example: 'Boleh foto? (사진 찍어도 되나요?)' },
+                    { indonesian: 'Pemandangan', pronunciation: '[뻬만당안]', korean: '경치', example: 'Pemandangan indah. (아름다운 경치)' }
+                ]
+            },
+            {
+                id: 'travel-5',
+                title: '공항',
+                description: '공항에서 사용하는 표현',
+                words: [
+                    { indonesian: 'Bandara', pronunciation: '[반다라]', korean: '공항', example: 'Saya pergi ke bandara. (저는 공항에 갑니다.)' },
+                    { indonesian: 'Tiket', pronunciation: '[띠켓]', korean: '표', example: 'Saya beli tiket. (저는 표를 삽니다.)' },
+                    { indonesian: 'Paspor', pronunciation: '[빠스포르]', korean: '여권', example: 'Ini paspor saya. (이것은 제 여권입니다.)' },
+                    { indonesian: 'Koper', pronunciation: '[코뻬르]', korean: '여행가방', example: 'Koper saya besar. (제 여행가방은 큽니다.)' },
+                    { indonesian: 'Keberangkatan', pronunciation: '[끄뻬랑깟탄]', korean: '출발', example: 'Keberangkatan jam berapa? (몇 시에 출발하나요?)' },
+                    { indonesian: 'Kedatangan', pronunciation: '[끄다탕안]', korean: '도착', example: 'Kedatangan jam berapa? (몇 시에 도착하나요?)' }
                 ]
             }
         ]
@@ -125,7 +255,182 @@ const lessonsData = {
                 words: [
                     { indonesian: 'Nasi goreng', pronunciation: '[나시 고렁]', korean: '볶음밥', example: 'Nasi goreng sangat enak. (볶음밥이 정말 맛있습니다.)' },
                     { indonesian: 'Rendang', pronunciation: '[렌당]', korean: '렌당', example: 'Rendang adalah makanan khas Padang. (렌당은 빠당의 특별한 음식입니다.)' },
-                    { indonesian: 'Satay', pronunciation: '[사떼이]', korean: '사테', example: 'Saya suka satay ayam. (저는 닭고기 사테를 좋아합니다.)' }
+                    { indonesian: 'Satay', pronunciation: '[사떼이]', korean: '사테', example: 'Saya suka satay ayam. (저는 닭고기 사테를 좋아합니다.)' },
+                    { indonesian: 'Gado-gado', pronunciation: '[가도-가도]', korean: '가도가도', example: 'Gado-gado adalah salad Indonesia. (가도가도는 인도네시아 샐러드입니다.)' },
+                    { indonesian: 'Soto', pronunciation: '[소토]', korean: '소토', example: 'Soto ayam enak. (닭고기 소토가 맛있습니다.)' },
+                    { indonesian: 'Bakso', pronunciation: '[박소]', korean: '바크소', example: 'Bakso adalah bakso Indonesia. (바크소는 인도네시아 만두입니다.)' }
+                ]
+            },
+            {
+                id: 'food-3',
+                title: '음료',
+                description: '음료 주문하기',
+                words: [
+                    { indonesian: 'Air', pronunciation: '[아이르]', korean: '물', example: 'Saya mau air putih. (저는 물을 원합니다.)' },
+                    { indonesian: 'Kopi', pronunciation: '[코삐]', korean: '커피', example: 'Saya mau kopi. (저는 커피를 원합니다.)' },
+                    { indonesian: 'Teh', pronunciation: '[떼]', korean: '차', example: 'Teh manis (단 차)' },
+                    { indonesian: 'Jus', pronunciation: '[주스]', korean: '주스', example: 'Jus jeruk (오렌지 주스)' },
+                    { indonesian: 'Es', pronunciation: '[으스]', korean: '얼음', example: 'Es teh (아이스 티)' },
+                    { indonesian: 'Dingin', pronunciation: '[딩인]', korean: '차갑다', example: 'Saya mau minuman dingin. (저는 차가운 음료를 원합니다.)' }
+                ]
+            },
+            {
+                id: 'food-4',
+                title: '맛 표현',
+                description: '맛에 대한 표현',
+                words: [
+                    { indonesian: 'Enak', pronunciation: '[으낙]', korean: '맛있다', example: 'Makanan ini enak. (이 음식은 맛있습니다.)' },
+                    { indonesian: 'Pedas', pronunciation: '[뻬다스]', korean: '맵다', example: 'Makanan ini pedas. (이 음식은 맵습니다.)' },
+                    { indonesian: 'Manis', pronunciation: '[마니스]', korean: '달다', example: 'Kue ini manis. (이 케이크는 달습니다.)' },
+                    { indonesian: 'Asin', pronunciation: '[아신]', korean: '짜다', example: 'Makanan ini asin. (이 음식은 짭니다.)' },
+                    { indonesian: 'Pahit', pronunciation: '[파힛]', korean: '쓰다', example: 'Kopi ini pahit. (이 커피는 씁니다.)' },
+                    { indonesian: 'Asam', pronunciation: '[아삼]', korean: '시다', example: 'Buah ini asam. (이 과일은 셉니다.)' }
+                ]
+            }
+        ]
+    },
+    shopping: {
+        title: '쇼핑',
+        description: '쇼핑할 때 유용한 표현들',
+        lessons: [
+            {
+                id: 'shopping-1',
+                title: '쇼핑 기본',
+                description: '쇼핑할 때 기본 표현',
+                words: [
+                    { indonesian: 'Toko', pronunciation: '[토코]', korean: '가게', example: 'Saya pergi ke toko. (저는 가게에 갑니다.)' },
+                    { indonesian: 'Beli', pronunciation: '[뻬리]', korean: '사다', example: 'Saya mau beli ini. (저는 이것을 사고 싶습니다.)' },
+                    { indonesian: 'Harga', pronunciation: '[하르가]', korean: '가격', example: 'Berapa harga? (얼마인가요?)' },
+                    { indonesian: 'Murah', pronunciation: '[무라]', korean: '싸다', example: 'Ini murah. (이것은 쌉니다.)' },
+                    { indonesian: 'Mahal', pronunciation: '[마할]', korean: '비싸다', example: 'Ini mahal. (이것은 비쌉니다.)' },
+                    { indonesian: 'Diskon', pronunciation: '[디스콘]', korean: '할인', example: 'Ada diskon? (할인이 있나요?)' }
+                ]
+            },
+            {
+                id: 'shopping-2',
+                title: '옷 쇼핑',
+                description: '옷을 살 때 사용하는 표현',
+                words: [
+                    { indonesian: 'Baju', pronunciation: '[바주]', korean: '옷', example: 'Saya mau beli baju. (저는 옷을 사고 싶습니다.)' },
+                    { indonesian: 'Celana', pronunciation: '[첼라나]', korean: '바지', example: 'Celana ini bagus. (이 바지는 좋습니다.)' },
+                    { indonesian: 'Sepatu', pronunciation: '[스빠뚜]', korean: '신발', example: 'Sepatu ini nyaman. (이 신발은 편합니다.)' },
+                    { indonesian: 'Coba', pronunciation: '[초바]', korean: '입어보다', example: 'Boleh coba? (입어봐도 되나요?)' },
+                    { indonesian: 'Ukuran', pronunciation: '[우쿠란]', korean: '사이즈', example: 'Ukuran berapa? (사이즈가 몇인가요?)' },
+                    { indonesian: 'Cocok', pronunciation: '[초첵]', korean: '맞다', example: 'Ini cocok. (이것은 맞습니다.)' }
+                ]
+            },
+            {
+                id: 'shopping-3',
+                title: '결제',
+                description: '결제할 때 사용하는 표현',
+                words: [
+                    { indonesian: 'Bayar', pronunciation: '[바야르]', korean: '지불하다', example: 'Saya mau bayar. (저는 지불하고 싶습니다.)' },
+                    { indonesian: 'Tunai', pronunciation: '[투나이]', korean: '현금', example: 'Bayar tunai (현금으로 지불)' },
+                    { indonesian: 'Kartu', pronunciation: '[까르뚜]', korean: '카드', example: 'Bayar pakai kartu (카드로 지불)' },
+                    { indonesian: 'Kembalian', pronunciation: '[끔발리안]', korean: '거스름돈', example: 'Kembaliannya berapa? (거스름돈이 얼마인가요?)' },
+                    { indonesian: 'Struk', pronunciation: '[스트룩]', korean: '영수증', example: 'Boleh minta struk? (영수증을 주시겠어요?)' }
+                ]
+            }
+        ]
+    },
+    business: {
+        title: '비즈니스',
+        description: '비즈니스 상황에서 사용하는 표현들',
+        lessons: [
+            {
+                id: 'business-1',
+                title: '회의',
+                description: '회의에서 사용하는 표현',
+                words: [
+                    { indonesian: 'Rapat', pronunciation: '[라빳]', korean: '회의', example: 'Ada rapat hari ini. (오늘 회의가 있습니다.)' },
+                    { indonesian: 'Presentasi', pronunciation: '[뻬레센타시]', korean: '발표', example: 'Saya akan presentasi. (저는 발표할 예정입니다.)' },
+                    { indonesian: 'Proyek', pronunciation: '[프로옥]', korean: '프로젝트', example: 'Proyek ini penting. (이 프로젝트는 중요합니다.)' },
+                    { indonesian: 'Deadline', pronunciation: '[데드라인]', korean: '마감일', example: 'Deadline kapan? (마감일이 언제인가요?)' },
+                    { indonesian: 'Kesepakatan', pronunciation: '[끄스빠깟탄]', korean: '합의', example: 'Kita perlu kesepakatan. (우리는 합의가 필요합니다.)' }
+                ]
+            },
+            {
+                id: 'business-2',
+                title: '이메일/전화',
+                description: '이메일과 전화에서 사용하는 표현',
+                words: [
+                    { indonesian: 'Email', pronunciation: '[이메일]', korean: '이메일', example: 'Saya kirim email. (저는 이메일을 보냅니다.)' },
+                    { indonesian: 'Telepon', pronunciation: '[뜨레폰]', korean: '전화', example: 'Saya telepon Anda. (저는 당신에게 전화합니다.)' },
+                    { indonesian: 'Pesan', pronunciation: '[뻬산]', korean: '메시지', example: 'Saya terima pesan. (저는 메시지를 받았습니다.)' },
+                    { indonesian: 'Balas', pronunciation: '[발라스]', korean: '답장', example: 'Saya akan balas. (저는 답장할 예정입니다.)' },
+                    { indonesian: 'Konfirmasi', pronunciation: '[콘피르마시]', korean: '확인', example: 'Tolong konfirmasi. (확인해주세요.)' }
+                ]
+            },
+            {
+                id: 'business-3',
+                title: '직장',
+                description: '직장에서 사용하는 표현',
+                words: [
+                    { indonesian: 'Kantor', pronunciation: '[깐토르]', korean: '사무실', example: 'Saya bekerja di kantor. (저는 사무실에서 일합니다.)' },
+                    { indonesian: 'Bos', pronunciation: '[보스]', korean: '상사', example: 'Bos saya baik. (제 상사는 좋습니다.)' },
+                    { indonesian: 'Rekan kerja', pronunciation: '[레깐 케르자]', korean: '동료', example: 'Rekan kerja saya ramah. (제 동료는 친절합니다.)' },
+                    { indonesian: 'Tugas', pronunciation: '[투가스]', korean: '업무', example: 'Saya punya banyak tugas. (저는 많은 업무가 있습니다.)' },
+                    { indonesian: 'Libur', pronunciation: '[리부르]', korean: '휴가', example: 'Saya mau libur. (저는 휴가를 원합니다.)' }
+                ]
+            }
+        ]
+    },
+    health: {
+        title: '건강',
+        description: '건강과 병원 관련 표현들',
+        lessons: [
+            {
+                id: 'health-1',
+                title: '병원',
+                description: '병원에서 사용하는 표현',
+                words: [
+                    { indonesian: 'Rumah sakit', pronunciation: '[루마 삭잇]', korean: '병원', example: 'Saya pergi ke rumah sakit. (저는 병원에 갑니다.)' },
+                    { indonesian: 'Dokter', pronunciation: '[독떼르]', korean: '의사', example: 'Saya mau bertemu dokter. (저는 의사를 만나고 싶습니다.)' },
+                    { indonesian: 'Sakit', pronunciation: '[삭잇]', korean: '아프다', example: 'Saya sakit kepala. (저는 두통이 있습니다.)' },
+                    { indonesian: 'Obat', pronunciation: '[오밧]', korean: '약', example: 'Saya perlu obat. (저는 약이 필요합니다.)' },
+                    { indonesian: 'Periksa', pronunciation: '[뻬릭사]', korean: '진찰', example: 'Saya mau periksa. (저는 진찰을 받고 싶습니다.)' }
+                ]
+            },
+            {
+                id: 'health-2',
+                title: '증상',
+                description: '증상을 설명하는 표현',
+                words: [
+                    { indonesian: 'Demam', pronunciation: '[드맘]', korean: '열', example: 'Saya demam. (저는 열이 있습니다.)' },
+                    { indonesian: 'Batuk', pronunciation: '[바뚝]', korean: '기침', example: 'Saya batuk. (저는 기침을 합니다.)' },
+                    { indonesian: 'Pusing', pronunciation: '[푸싱]', korean: '어지러움', example: 'Saya pusing. (저는 어지럽습니다.)' },
+                    { indonesian: 'Mual', pronunciation: '[무알]', korean: '메스꺼움', example: 'Saya mual. (저는 메스꺼움을 느낍니다.)' },
+                    { indonesian: 'Luka', pronunciation: '[루까]', korean: '상처', example: 'Saya punya luka. (저는 상처가 있습니다.)' }
+                ]
+            }
+        ]
+    },
+    hobbies: {
+        title: '취미',
+        description: '취미와 여가 활동 표현들',
+        lessons: [
+            {
+                id: 'hobbies-1',
+                title: '스포츠',
+                description: '스포츠 관련 표현',
+                words: [
+                    { indonesian: 'Sepak bola', pronunciation: '[스빡 볼라]', korean: '축구', example: 'Saya suka sepak bola. (저는 축구를 좋아합니다.)' },
+                    { indonesian: 'Basket', pronunciation: '[바스켓]', korean: '농구', example: 'Saya main basket. (저는 농구를 합니다.)' },
+                    { indonesian: 'Renang', pronunciation: '[르낭]', korean: '수영', example: 'Saya bisa renang. (저는 수영을 할 수 있습니다.)' },
+                    { indonesian: 'Lari', pronunciation: '[라리]', korean: '달리기', example: 'Saya suka lari pagi. (저는 아침 달리기를 좋아합니다.)' },
+                    { indonesian: 'Bersepeda', pronunciation: '[뻬르스뻬다]', korean: '자전거 타기', example: 'Saya bersepeda setiap hari. (저는 매일 자전거를 탑니다.)' }
+                ]
+            },
+            {
+                id: 'hobbies-2',
+                title: '예술',
+                description: '예술과 문화 활동',
+                words: [
+                    { indonesian: 'Lukis', pronunciation: '[루끼스]', korean: '그림 그리기', example: 'Saya suka lukis. (저는 그림 그리기를 좋아합니다.)' },
+                    { indonesian: 'Fotografi', pronunciation: '[포토그라피]', korean: '사진', example: 'Hobi saya fotografi. (제 취미는 사진입니다.)' },
+                    { indonesian: 'Tari', pronunciation: '[따리]', korean: '춤', example: 'Saya bisa tari. (저는 춤을 출 수 있습니다.)' },
+                    { indonesian: 'Musik', pronunciation: '[무식]', korean: '음악', example: 'Saya suka musik. (저는 음악을 좋아합니다.)' },
+                    { indonesian: 'Nyanyi', pronunciation: '[냐니]', korean: '노래', example: 'Saya suka nyanyi. (저는 노래를 좋아합니다.)' }
                 ]
             }
         ]
