@@ -91,6 +91,7 @@
                 <div class="home-actions">
                     <button class="btn btn-primary" id="free-talk-btn">💬 Free Talk</button>
                     <button class="btn btn-secondary" id="leaderboard-btn">🏆 리더보드</button>
+                    <button class="btn btn-secondary" id="mypage-btn">👤 마이페이지</button>
                 </div>
 
                 <div class="lesson-categories">
@@ -323,6 +324,57 @@
                 </div>
                 <div class="leaderboard-list" id="leaderboard-list">
                     <!-- 리더보드 항목이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 마이페이지 화면 -->
+        <div id="mypage-screen" class="screen">
+            <div class="mypage-header">
+                <button class="back-btn" id="back-from-mypage">← 뒤로</button>
+                <h2>👤 마이페이지</h2>
+            </div>
+            <div class="mypage-content">
+                <div class="mypage-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-words">0</div>
+                            <div class="stat-label">학습한 단어</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="completed-lessons-count">0</div>
+                            <div class="stat-label">완료한 레슨</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="learning-time">0분</div>
+                            <div class="stat-label">학습 시간</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-xp">0</div>
+                            <div class="stat-label">총 XP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mypage-progress">
+                    <h3>학습 진행 상황</h3>
+                    <div class="progress-by-category" id="progress-by-category">
+                        <!-- 카테고리별 진행 상황이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+
+                <div class="mypage-actions">
+                    <button class="btn btn-danger" id="reset-progress-btn">🔄 학습 진행 초기화</button>
                 </div>
             </div>
         </div>

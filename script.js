@@ -512,7 +512,9 @@ function signup(username, password) {
         weeklyXP: 0,
         monthlyXP: 0,
         lastWeeklyReset: getWeekStart(),
-        lastMonthlyReset: getMonthStart()
+        lastMonthlyReset: getMonthStart(),
+        totalLearningTime: 0, // 총 학습 시간 (밀리초)
+        lessonStartTime: null // 현재 레슨 시작 시간
     };
     
     users.push(newUser);
@@ -666,6 +668,13 @@ function showLessons(category) {
 function startLesson(lesson) {
     currentLesson = lesson;
     currentCardIndex = 0;
+    
+    // 학습 시간 추적 시작
+    if (currentUser) {
+        currentUser.lessonStartTime = Date.now();
+        saveUserData();
+    }
+    
     showCard();
     updateLessonProgress();
     showScreen('learn-screen');
@@ -1120,6 +1129,14 @@ function completeLesson() {
         currentUser.completedLessons.push(currentLesson.id);
         saveUserData();
         updateXP(50);
+    }
+    
+    // 학습 시간 업데이트
+    if (currentUser.lessonStartTime) {
+        const lessonTime = Date.now() - currentUser.lessonStartTime;
+        currentUser.totalLearningTime = (currentUser.totalLearningTime || 0) + lessonTime;
+        currentUser.lessonStartTime = null;
+        saveUserData();
     }
     
     // 정확도 계산
@@ -1647,6 +1664,102 @@ document.getElementById('back-from-freetalk').addEventListener('click', () => {
         showScreen('home-screen');
     }
 });
+
+// 마이페이지
+document.getElementById('mypage-btn').addEventListener('click', () => {
+    showMyPage();
+});
+
+document.getElementById('back-from-mypage').addEventListener('click', () => {
+    showScreen('home-screen');
+});
+
+// 마이페이지 표시
+function showMyPage() {
+    if (!currentUser) {
+        showScreen('auth-screen');
+        return;
+    }
+    
+    // 학습한 단어 수 계산
+    const completedLessons = currentUser.completedLessons || [];
+    let totalWords = 0;
+    completedLessons.forEach(lessonId => {
+        for (const categoryKey in lessonsData) {
+            const category = lessonsData[categoryKey];
+            const lesson = category.lessons.find(l => l.id === lessonId);
+            if (lesson) {
+                totalWords += lesson.words.length;
+                break;
+            }
+        }
+    });
+    
+    // 학습 시간 계산 (분 단위)
+    const totalLearningTime = currentUser.totalLearningTime || 0;
+    const learningMinutes = Math.floor(totalLearningTime / 60000);
+    const learningHours = Math.floor(learningMinutes / 60);
+    const displayTime = learningHours > 0 
+        ? `${learningHours}시간 ${learningMinutes % 60}분`
+        : `${learningMinutes}분`;
+    
+    // 통계 업데이트
+    document.getElementById('total-words').textContent = totalWords;
+    document.getElementById('completed-lessons-count').textContent = completedLessons.length;
+    document.getElementById('learning-time').textContent = displayTime;
+    document.getElementById('total-xp').textContent = currentUser.xp || 0;
+    
+    // 카테고리별 진행 상황 표시
+    const progressContainer = document.getElementById('progress-by-category');
+    progressContainer.innerHTML = '';
+    
+    for (const categoryKey in lessonsData) {
+        const category = lessonsData[categoryKey];
+        const categoryLessons = category.lessons;
+        const completedInCategory = categoryLessons.filter(l => 
+            completedLessons.includes(l.id)
+        ).length;
+        const totalInCategory = categoryLessons.length;
+        const progressPercent = totalInCategory > 0 
+            ? Math.round((completedInCategory / totalInCategory) * 100) 
+            : 0;
+        
+        const progressItem = document.createElement('div');
+        progressItem.className = 'category-progress-item';
+        progressItem.innerHTML = `
+            <div class="category-progress-header">
+                <span class="category-progress-name">${category.title}</span>
+                <span class="category-progress-count">${completedInCategory}/${totalInCategory}</span>
+            </div>
+            <div class="category-progress-bar">
+                <div class="category-progress-fill" style="width: ${progressPercent}%"></div>
+            </div>
+        `;
+        progressContainer.appendChild(progressItem);
+    }
+    
+    showScreen('mypage-screen');
+}
+
+// 학습 진행 초기화
+function resetProgress() {
+    if (!currentUser) return;
+    
+    if (confirm('정말로 모든 학습 진행 상황을 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        currentUser.completedLessons = [];
+        currentUser.xp = 0;
+        currentUser.weeklyXP = 0;
+        currentUser.monthlyXP = 0;
+        currentUser.totalLearningTime = 0;
+        currentUser.lessonStartTime = null;
+        saveUserData();
+        updateUserDisplay();
+        showMyPage();
+        alert('학습 진행 상황이 초기화되었습니다.');
+    }
+}
+
+document.getElementById('reset-progress-btn').addEventListener('click', resetProgress);
 
 document.querySelectorAll('.topic-card').forEach(card => {
     card.addEventListener('click', () => {
