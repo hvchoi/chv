@@ -858,12 +858,41 @@ function updateRecordButton() {
     }
 }
 
+// 숫자-인도네시아어 매핑
+const numberToIndonesian = {
+    '1': 'satu',
+    '2': 'dua',
+    '3': 'tiga',
+    '4': 'empat',
+    '5': 'lima',
+    '6': 'enam',
+    '7': 'tujuh',
+    '8': 'delapan',
+    '9': 'sembilan',
+    '10': 'sepuluh',
+    'one': 'satu',
+    'two': 'dua',
+    'three': 'tiga',
+    'four': 'empat',
+    'five': 'lima',
+    'six': 'enam',
+    'seven': 'tujuh',
+    'eight': 'delapan',
+    'nine': 'sembilan',
+    'ten': 'sepuluh'
+};
+
 // 발음 정확도 검사
 function checkPronunciation(userSpeech) {
     if (!currentPronunciationWord) return;
     
     const correctText = currentPronunciationWord.indonesian.toLowerCase().trim();
-    const userText = userSpeech.toLowerCase().trim();
+    let userText = userSpeech.toLowerCase().trim();
+    
+    // 숫자가 인식된 경우 인도네시아어로 변환 시도
+    if (numberToIndonesian[userText]) {
+        userText = numberToIndonesian[userText];
+    }
     
     // 정확도 계산 (Levenshtein 거리 기반)
     const accuracy = calculateSimilarity(correctText, userText);
