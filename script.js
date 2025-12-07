@@ -1782,11 +1782,18 @@ document.getElementById('end-conversation-btn').addEventListener('click', endCon
 document.getElementById('record-btn').addEventListener('click', toggleRecording);
 
 // 제목 클릭 시 홈 화면으로 이동
-document.getElementById('app-title').addEventListener('click', () => {
-    if (currentUser) {
-        showScreen('home-screen');
+function setupTitleClick() {
+    const titleElement = document.getElementById('app-title');
+    if (titleElement) {
+        titleElement.addEventListener('click', () => {
+            if (currentUser) {
+                showScreen('home-screen');
+            } else {
+                showScreen('auth-screen');
+            }
+        });
     }
-});
+}
 
 // 초기화
 if (checkSession()) {
@@ -1794,3 +1801,6 @@ if (checkSession()) {
 } else {
     showScreen('auth-screen');
 }
+
+// 제목 클릭 이벤트 설정
+setupTitleClick();
