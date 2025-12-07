@@ -705,7 +705,7 @@ function showCard() {
     // 발음 버튼
     document.getElementById('speak-btn').onclick = () => speakWord(word.indonesian);
     
-    // 발음 연습 버튼 추가
+    // 발음 연습 버튼 추가/업데이트
     const cardContent = card.querySelector('.card-content');
     let practiceBtn = cardContent.querySelector('.pronunciation-practice-btn');
     if (!practiceBtn) {
@@ -714,9 +714,10 @@ function showCard() {
         practiceBtn.textContent = '🎤 발음 연습';
         practiceBtn.style.marginTop = '15px';
         practiceBtn.style.width = '100%';
-        practiceBtn.onclick = () => startPronunciationCheck(word);
         cardContent.appendChild(practiceBtn);
     }
+    // 매번 현재 단어로 이벤트 핸들러 업데이트 (중요: 클로저 문제 해결)
+    practiceBtn.onclick = () => startPronunciationCheck(word);
     
     // 카드 뒤집기
     document.getElementById('flip-btn').onclick = () => {
