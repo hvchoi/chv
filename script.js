@@ -936,37 +936,124 @@ function levenshteinDistance(str1, str2) {
     return matrix[str2.length][str1.length];
 }
 
-// 연습 문제 표시
+// 연습 문제 관련 변수
+let practiceQuestions = [];
+let currentPracticeIndex = 0;
+let practiceAnswers = [];
+
+// 연습 문제 생성 및 표시
 function showPractice() {
     document.getElementById('learning-card').style.display = 'none';
     document.getElementById('practice-section').style.display = 'block';
     
-    // 랜덤 단어 선택
-    const randomWord = currentLesson.words[Math.floor(Math.random() * currentLesson.words.length)];
-    const wrongWords = currentLesson.words
-        .filter(w => w.indonesian !== randomWord.indonesian)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
+    // 최소 3개의 연습 문제 생성
+    const numQuestions = Math.min(3, currentLesson.words.length);
+    practiceQuestions = [];
+    practiceAnswers = [];
+    currentPracticeIndex = 0;
     
-    const options = [randomWord, ...wrongWords].sort(() => Math.random() - 0.5);
+    // 사용된 단어 추적
+    const usedWords = new Set();
     
-    document.getElementById('practice-question').textContent = `"${randomWord.korean}"을 인도네시아어로 말하면?`;
+    for (let i = 0; i < numQuestions; i++) {
+        // 아직 사용하지 않은 단어 선택
+        const availableWords = currentLesson.words.filter(w => !usedWords.has(w.indonesian));
+        if (availableWords.length === 0) break;
+        
+        const randomWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+        usedWords.add(randomWord.indonesian);
+        
+        // 오답 선택
+        const wrongWords = currentLesson.words
+            .filter(w => w.indonesian !== randomWord.indonesian)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 2);
+        
+        const options = [randomWord, ...wrongWords].sort(() => Math.random() - 0.5);
+        
+        practiceQuestions.push({
+            word: randomWord,
+            options: options
+        });
+    }
+    
+    // 첫 번째 문제 표시
+    showCurrentPracticeQuestion();
+    
+    document.getElementById('prev-card-btn').style.display = 'none';
+    document.getElementById('next-card-btn').style.display = 'none';
+    document.getElementById('complete-lesson-btn').style.display = 'none';
+}
+
+// 현재 연습 문제 표시
+function showCurrentPracticeQuestion() {
+    if (currentPracticeIndex >= practiceQuestions.length) {
+        // 모든 문제 완료
+        showPracticeResults();
+        return;
+    }
+    
+    const question = practiceQuestions[currentPracticeIndex];
+    const questionNum = currentPracticeIndex + 1;
+    const totalQuestions = practiceQuestions.length;
+    
+    document.getElementById('practice-question').textContent = 
+        `문제 ${questionNum}/${totalQuestions}: "${question.word.korean}"을 인도네시아어로 말하면?`;
     
     const optionsDiv = document.getElementById('practice-options');
     optionsDiv.innerHTML = '';
     
-    options.forEach(option => {
+    question.options.forEach(option => {
         const optionBtn = document.createElement('div');
         optionBtn.className = 'practice-option';
         optionBtn.textContent = option.indonesian;
-        optionBtn.onclick = () => checkAnswer(optionBtn, option, randomWord);
+        optionBtn.onclick = () => checkAnswer(optionBtn, option, question.word);
         optionsDiv.appendChild(optionBtn);
     });
     
+    document.getElementById('practice-feedback').textContent = '';
     document.getElementById('practice-feedback').className = 'practice-feedback';
-    document.getElementById('prev-card-btn').style.display = 'none';
-    document.getElementById('next-card-btn').style.display = 'none';
-    document.getElementById('complete-lesson-btn').style.display = 'block';
+    
+    // 다음 문제 버튼 숨기기
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    if (nextQuestionBtn) {
+        nextQuestionBtn.style.display = 'none';
+    }
+}
+
+// 연습 결과 표시
+function showPracticeResults() {
+    const correctCount = practiceAnswers.filter(a => a.correct).length;
+    const totalQuestions = practiceQuestions.length;
+    const accuracy = Math.round((correctCount / totalQuestions) * 100);
+    
+    const optionsDiv = document.getElementById('practice-options');
+    optionsDiv.innerHTML = `
+        <div class="practice-results">
+            <h3>연습 완료! 🎉</h3>
+            <p>정답: ${correctCount}/${totalQuestions}</p>
+            <p>정확도: ${accuracy}%</p>
+        </div>
+    `;
+    
+    document.getElementById('practice-feedback').textContent = 
+        accuracy >= 70 ? '훌륭합니다! 레슨을 완료할 수 있습니다.' : '조금 더 연습이 필요해요. 다시 시도해보세요!';
+    document.getElementById('practice-feedback').className = `practice-feedback ${accuracy >= 70 ? 'correct' : 'incorrect'}`;
+    
+    // 레슨 완료 버튼 표시 (정확도 70% 이상일 때만)
+    if (accuracy >= 70) {
+        document.getElementById('complete-lesson-btn').style.display = 'block';
+    } else {
+        // 다시 시도 버튼 추가
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn btn-secondary';
+        retryBtn.textContent = '다시 시도';
+        retryBtn.style.marginTop = '15px';
+        retryBtn.onclick = () => {
+            showPractice();
+        };
+        optionsDiv.appendChild(retryBtn);
+    }
 }
 
 // 정답 확인
@@ -974,7 +1061,16 @@ function checkAnswer(selectedBtn, selectedOption, correctWord) {
     const options = document.querySelectorAll('.practice-option');
     options.forEach(opt => opt.style.pointerEvents = 'none');
     
-    if (selectedOption.indonesian === correctWord.indonesian) {
+    const isCorrect = selectedOption.indonesian === correctWord.indonesian;
+    
+    // 답안 저장
+    practiceAnswers.push({
+        correct: isCorrect,
+        selected: selectedOption.indonesian,
+        correctAnswer: correctWord.indonesian
+    });
+    
+    if (isCorrect) {
         selectedBtn.classList.add('correct');
         document.getElementById('practice-feedback').textContent = '정답입니다! 🎉';
         document.getElementById('practice-feedback').className = 'practice-feedback correct';
@@ -989,11 +1085,34 @@ function checkAnswer(selectedBtn, selectedOption, correctWord) {
         document.getElementById('practice-feedback').textContent = `틀렸습니다. 정답은 "${correctWord.indonesian}"입니다.`;
         document.getElementById('practice-feedback').className = 'practice-feedback incorrect';
     }
+    
+    // 다음 문제 버튼 표시
+    setTimeout(() => {
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        if (nextQuestionBtn) {
+            nextQuestionBtn.style.display = 'block';
+        } else {
+            // 다음 문제 버튼 생성
+            const optionsDiv = document.getElementById('practice-options');
+            const nextBtn = document.createElement('button');
+            nextBtn.id = 'next-question-btn';
+            nextBtn.className = 'btn btn-primary';
+            nextBtn.textContent = currentPracticeIndex + 1 < practiceQuestions.length ? '다음 문제' : '결과 보기';
+            nextBtn.style.marginTop = '15px';
+            nextBtn.style.width = '100%';
+            nextBtn.onclick = () => {
+                currentPracticeIndex++;
+                showCurrentPracticeQuestion();
+            };
+            optionsDiv.appendChild(nextBtn);
+        }
+    }, 1000);
 }
 
 // 레슨 완료
 function completeLesson() {
     if (!currentUser) return;
+    if (!currentLesson) return;
     
     const userData = getUserData();
     if (!userData.completedLessons.includes(currentLesson.id)) {
@@ -1003,8 +1122,13 @@ function completeLesson() {
         updateXP(50);
     }
     
+    // 정확도 계산
+    const correctCount = practiceAnswers.filter(a => a.correct).length;
+    const totalQuestions = practiceQuestions.length;
+    const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;
+    
     document.getElementById('xp-earned').textContent = '+50';
-    document.getElementById('accuracy').textContent = '100%';
+    document.getElementById('accuracy').textContent = `${accuracy}%`;
     showScreen('completion-screen');
 }
 
@@ -1221,6 +1345,13 @@ document.getElementById('continue-btn').addEventListener('click', () => {
 });
 
 document.getElementById('review-btn').addEventListener('click', () => {
+    // currentLesson이 없으면 경고
+    if (!currentLesson) {
+        alert('레슨 정보를 찾을 수 없습니다. 다시 레슨을 선택해주세요.');
+        showScreen('home-screen');
+        return;
+    }
+    
     currentCardIndex = 0;
     showCard();
     updateLessonProgress();
