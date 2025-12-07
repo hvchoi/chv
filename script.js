@@ -1781,6 +1781,13 @@ document.getElementById('end-conversation-btn').addEventListener('click', endCon
 // 발음 연습 이벤트 리스너
 document.getElementById('record-btn').addEventListener('click', toggleRecording);
 
+// 제목 클릭 시 홈 화면으로 이동
+document.getElementById('app-title').addEventListener('click', () => {
+    if (currentUser) {
+        showScreen('home-screen');
+    }
+});
+
 // 초기화
 if (checkSession()) {
     // 세션이 있으면 자동 로그인됨
