@@ -1127,6 +1127,9 @@ function completeLesson() {
     const totalQuestions = practiceQuestions.length;
     const accuracy = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;
     
+    // 마지막 완료한 레슨 ID 저장 (복습하기를 위해)
+    lastCompletedLessonId = currentLesson.id;
+    
     document.getElementById('xp-earned').textContent = '+50';
     document.getElementById('accuracy').textContent = `${accuracy}%`;
     showScreen('completion-screen');
@@ -1345,17 +1348,42 @@ document.getElementById('continue-btn').addEventListener('click', () => {
 });
 
 document.getElementById('review-btn').addEventListener('click', () => {
-    // currentLesson이 없으면 경고
+    // currentLesson이 없으면 저장된 레슨 ID로 복원 시도
+    if (!currentLesson && lastCompletedLessonId) {
+        // 모든 레슨에서 해당 ID 찾기
+        for (const categoryKey in lessonsData) {
+            const category = lessonsData[categoryKey];
+            const lesson = category.lessons.find(l => l.id === lastCompletedLessonId);
+            if (lesson) {
+                currentLesson = lesson;
+                break;
+            }
+        }
+    }
+    
+    // 여전히 currentLesson이 없으면 경고
     if (!currentLesson) {
         alert('레슨 정보를 찾을 수 없습니다. 다시 레슨을 선택해주세요.');
         showScreen('home-screen');
         return;
     }
     
-    currentCardIndex = 0;
-    showCard();
-    updateLessonProgress();
+    // 먼저 화면 전환
     showScreen('learn-screen');
+    
+    // 카드 인덱스 초기화
+    currentCardIndex = 0;
+    
+    // 카드와 연습 섹션 초기화
+    document.getElementById('learning-card').style.display = 'block';
+    document.getElementById('practice-section').style.display = 'none';
+    document.getElementById('pronunciation-section').style.display = 'none';
+    
+    // 약간의 지연 후 카드 표시 (화면 전환 완료 후)
+    setTimeout(() => {
+        showCard();
+        updateLessonProgress();
+    }, 100);
 });
 
 // Free Talk 관련 변수
