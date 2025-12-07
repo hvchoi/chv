@@ -669,6 +669,11 @@ function startLesson(lesson) {
     currentLesson = lesson;
     currentCardIndex = 0;
     
+    // 연습 문제 변수 초기화 (새 레슨 시작 시)
+    practiceQuestions = [];
+    practiceAnswers = [];
+    currentPracticeIndex = 0;
+    
     // 학습 시간 추적 시작
     if (currentUser) {
         currentUser.lessonStartTime = Date.now();
@@ -953,6 +958,11 @@ let practiceAnswers = [];
 
 // 연습 문제 생성 및 표시
 function showPractice() {
+    if (!currentLesson) {
+        console.error('currentLesson is not set in showPractice');
+        return;
+    }
+    
     document.getElementById('learning-card').style.display = 'none';
     document.getElementById('practice-section').style.display = 'block';
     
