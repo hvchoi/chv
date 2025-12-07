@@ -3,110 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>동료 점심 호환성 테스트</title>
+    <title>인도네시아어 학습 - Speak 스타일</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- 메인 화면 -->
-        <div id="main-screen" class="screen active">
-            <h1>🍽️ 동료 식사 호환성 테스트</h1>
-            <p class="subtitle">점심부터 저녁, 술자리까지! 오늘 누구와 함께 식사할까요? 🍻</p>
-            <button id="start-btn" class="btn btn-primary">테스트 시작하기</button>
-            <button id="view-results-btn" class="btn btn-secondary">결과 보기</button>
-            <button id="delete-data-btn" class="btn btn-danger">데이터 삭제</button>
-        </div>
-
-        <!-- 퀴즈 화면 -->
-        <div id="quiz-screen" class="screen">
-            <div class="quiz-header">
-                <h2>점심 선호도 퀴즈</h2>
-                <div class="progress-bar">
-                    <div id="progress" class="progress-fill"></div>
-                </div>
-                <p class="question-counter"><span id="current-q">1</span> / <span id="total-q">5</span></p>
-            </div>
-            
-            <div class="quiz-content">
-                <div id="name-input-section" class="quiz-section">
-                    <label for="employee-name">이름을 입력해주세요</label>
-                    <input type="text" id="employee-name" placeholder="홍길동" required>
-                </div>
-
-                <div id="quiz-questions" class="quiz-section"></div>
-            </div>
-
-            <div class="quiz-actions">
-                <button id="prev-btn" class="btn btn-secondary" style="display: none;">이전</button>
-                <button id="next-btn" class="btn btn-primary">다음</button>
-                <button id="submit-btn" class="btn btn-primary" style="display: none;">제출하기</button>
-            </div>
-        </div>
-
-        <!-- 결과 화면 -->
-        <div id="results-screen" class="screen">
-            <h2>호환성 분석 결과</h2>
-            
-            <div class="results-content">
-                <!-- 호환성 그래프 -->
-                <div class="result-section">
-                    <h3>직원 간 호환성 그래프</h3>
-                    <div class="graph-container">
-                        <canvas id="compatibility-graph"></canvas>
+    <div class="app-container">
+        <!-- 헤더 -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1>🇮🇩 인도네시아어 학습</h1>
+                <div class="header-right">
+                    <div class="user-progress" id="user-progress-section" style="display: none;">
+                        <div class="xp-bar">
+                            <div class="xp-fill" id="xp-fill"></div>
+                        </div>
+                        <span class="xp-text" id="xp-text">XP: 0</span>
+                    </div>
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <span class="username" id="username-display"></span>
+                        <button class="logout-btn" id="logout-btn">로그아웃</button>
                     </div>
                 </div>
+            </div>
+        </header>
 
-                <!-- 호환성 매트릭스 -->
-                <div class="result-section">
-                    <h3>호환성 매트릭스</h3>
-                    <div id="compatibility-matrix" class="matrix-container"></div>
+        <!-- 로그인/회원가입 화면 -->
+        <div id="auth-screen" class="screen active">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">로그인</button>
+                    <button class="auth-tab" data-tab="signup">회원가입</button>
                 </div>
 
-                <!-- 그룹 추천 -->
-                <div class="result-section">
-                    <h3>추천 점심 그룹</h3>
-                    <div id="group-recommendations" class="groups-container"></div>
+                <!-- 로그인 폼 -->
+                <div id="login-form" class="auth-form active">
+                    <h2>로그인</h2>
+                    <div class="form-group">
+                        <label for="login-username">사용자명</label>
+                        <input type="text" id="login-username" placeholder="사용자명 입력" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">비밀번호</label>
+                        <input type="password" id="login-password" placeholder="비밀번호 입력" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-me">
+                            <span>로그인 상태 유지</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" id="login-btn">로그인</button>
+                    <div class="auth-error" id="login-error"></div>
                 </div>
 
-                <!-- 식당 추천 -->
-                <div class="result-section">
-                    <h3>추천 식당</h3>
-                    <div id="restaurant-map" class="map-container"></div>
-                    <div id="restaurant-list" class="restaurant-list"></div>
+                <!-- 회원가입 폼 -->
+                <div id="signup-form" class="auth-form">
+                    <h2>회원가입</h2>
+                    <div class="form-group">
+                        <label for="signup-username">사용자명</label>
+                        <input type="text" id="signup-username" placeholder="사용자명 입력" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">비밀번호</label>
+                        <input type="password" id="signup-password" placeholder="비밀번호 입력 (최소 6자)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password-confirm">비밀번호 확인</label>
+                        <input type="password" id="signup-password-confirm" placeholder="비밀번호 다시 입력" required>
+                    </div>
+                    <button class="btn btn-primary" id="signup-btn">회원가입</button>
+                    <div class="auth-error" id="signup-error"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 화면 -->
+        <div id="home-screen" class="screen">
+            <div class="home-content">
+                <div class="welcome-section">
+                    <h2>안녕하세요! 👋</h2>
+                    <p>인도네시아어를 재미있게 배워보세요!</p>
+                </div>
+                
+                <div class="home-actions">
+                    <button class="btn btn-primary" id="free-talk-btn">💬 Free Talk</button>
+                    <button class="btn btn-secondary" id="leaderboard-btn">🏆 리더보드</button>
+                </div>
+
+                <div class="lesson-categories">
+                    <div class="category-card" data-category="basics">
+                        <div class="category-icon">📚</div>
+                        <h3>기초</h3>
+                        <p>인사말과 기본 표현</p>
+                        <div class="lesson-count">5개 레슨</div>
+                    </div>
+                    
+                    <div class="category-card" data-category="daily">
+                        <div class="category-icon">🗣️</div>
+                        <h3>일상 대화</h3>
+                        <p>일상에서 자주 쓰는 표현</p>
+                        <div class="lesson-count">8개 레슨</div>
+                    </div>
+                    
+                    <div class="category-card" data-category="travel">
+                        <div class="category-icon">✈️</div>
+                        <h3>여행</h3>
+                        <p>여행에 유용한 표현</p>
+                        <div class="lesson-count">6개 레슨</div>
+                    </div>
+                    
+                    <div class="category-card" data-category="food">
+                        <div class="category-icon">🍜</div>
+                        <h3>음식</h3>
+                        <p>음식 주문과 요리</p>
+                        <div class="lesson-count">7개 레슨</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 레슨 선택 화면 -->
+        <div id="lessons-screen" class="screen">
+            <div class="lessons-header">
+                <button class="back-btn" id="back-to-home">← 뒤로</button>
+                <h2 id="category-title">기초</h2>
+            </div>
+            <div class="lessons-list" id="lessons-list"></div>
+        </div>
+
+        <!-- 학습 화면 -->
+        <div id="learn-screen" class="screen">
+            <div class="learn-header">
+                <button class="back-btn" id="back-to-lessons">← 뒤로</button>
+                <div class="lesson-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="lesson-progress-fill"></div>
+                    </div>
+                    <span id="lesson-progress-text">1 / 10</span>
                 </div>
             </div>
 
-            <div class="results-actions">
-                <button id="new-test-btn" class="btn btn-primary">새 테스트하기</button>
-                <button id="back-to-main-btn" class="btn btn-secondary">메인으로</button>
+            <div class="learn-content">
+                <!-- 단어/문장 학습 카드 -->
+                <div class="learning-card" id="learning-card">
+                    <div class="card-front">
+                        <div class="card-content">
+                            <div class="indonesian-text" id="indonesian-text">Selamat pagi</div>
+                            <div class="pronunciation" id="pronunciation">[슬라맛 빠기]</div>
+                            <button class="speak-btn" id="speak-btn">🔊 발음 듣기</button>
+                        </div>
+                    </div>
+                    <div class="card-back" style="display: none;">
+                        <div class="card-content">
+                            <div class="korean-text" id="korean-text">좋은 아침</div>
+                            <div class="example-sentence" id="example-sentence">
+                                <strong>예문:</strong> Selamat pagi, Pak! (좋은 아침입니다, 선생님!)
+                            </div>
+                        </div>
+                    </div>
+                    <button class="flip-btn" id="flip-btn">카드 뒤집기</button>
+                </div>
+
+                <!-- 연습 문제 -->
+                <div class="practice-section" id="practice-section" style="display: none;">
+                    <h3>연습해보세요!</h3>
+                    <div class="practice-question" id="practice-question"></div>
+                    <div class="practice-options" id="practice-options"></div>
+                    <div class="practice-feedback" id="practice-feedback"></div>
+                </div>
+
+                <!-- 발음 연습 -->
+                <div class="pronunciation-section" id="pronunciation-section" style="display: none;">
+                    <h3>발음 연습</h3>
+                    <div class="pronunciation-text" id="pronunciation-text"></div>
+                    <button class="record-btn" id="record-btn">🎤 말하기</button>
+                    <div class="pronunciation-feedback" id="pronunciation-feedback"></div>
+                </div>
+            </div>
+
+            <div class="learn-actions">
+                <button class="btn btn-secondary" id="prev-card-btn" style="display: none;">이전</button>
+                <button class="btn btn-primary" id="next-card-btn">다음</button>
+                <button class="btn btn-primary" id="complete-lesson-btn" style="display: none;">레슨 완료</button>
+            </div>
+        </div>
+
+        <!-- 완료 화면 -->
+        <div id="completion-screen" class="screen">
+            <div class="completion-content">
+                <div class="celebration">🎉</div>
+                <h2>레슨 완료!</h2>
+                <div class="completion-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="xp-earned">+50</div>
+                        <div class="stat-label">XP 획득</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="accuracy">100%</div>
+                        <div class="stat-label">정확도</div>
+                    </div>
+                </div>
+                <div class="completion-actions">
+                    <button class="btn btn-primary" id="continue-btn">계속하기</button>
+                    <button class="btn btn-secondary" id="review-btn">복습하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Free Talk 화면 -->
+        <div id="free-talk-screen" class="screen">
+            <div class="free-talk-header">
+                <button class="back-btn" id="back-from-freetalk">← 뒤로</button>
+                <h2>💬 Free Talk</h2>
+            </div>
+
+            <!-- 주제 선택 화면 -->
+            <div id="topic-selection" class="topic-selection">
+                <h3>대화 주제를 선택하세요</h3>
+                <div class="topic-grid">
+                    <div class="topic-card" data-topic="introduction">
+                        <div class="topic-icon">👋</div>
+                        <h4>자기소개</h4>
+                        <p>자신에 대해 소개하기</p>
+                    </div>
+                    <div class="topic-card" data-topic="hobby">
+                        <div class="topic-icon">🎨</div>
+                        <h4>취미</h4>
+                        <p>취미와 관심사에 대해 이야기하기</p>
+                    </div>
+                    <div class="topic-card" data-topic="food">
+                        <div class="topic-icon">🍜</div>
+                        <h4>음식</h4>
+                        <p>좋아하는 음식에 대해 이야기하기</p>
+                    </div>
+                    <div class="topic-card" data-topic="travel">
+                        <div class="topic-icon">✈️</div>
+                        <h4>여행</h4>
+                        <p>여행 경험에 대해 이야기하기</p>
+                    </div>
+                    <div class="topic-card" data-topic="daily">
+                        <div class="topic-icon">🏠</div>
+                        <h4>일상생활</h4>
+                        <p>일상적인 하루에 대해 이야기하기</p>
+                    </div>
+                    <div class="topic-card" data-topic="work">
+                        <div class="topic-icon">💼</div>
+                        <h4>직업</h4>
+                        <p>직업과 일에 대해 이야기하기</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 대화 화면 -->
+            <div id="conversation-view" class="conversation-view" style="display: none;">
+                <div class="conversation-topic">
+                    <span id="current-topic-name">주제</span>
+                    <button class="end-conversation-btn" id="end-conversation-btn">대화 종료</button>
+                </div>
+
+                <div class="conversation-messages" id="conversation-messages">
+                    <!-- 대화 메시지가 여기에 표시됩니다 -->
+                </div>
+
+                <div class="conversation-input-area">
+                    <div class="suggested-responses" id="suggested-responses">
+                        <!-- 제안 응답이 여기에 표시됩니다 -->
+                    </div>
+                    <div class="input-container">
+                        <input type="text" id="user-message-input" placeholder="인도네시아어로 입력하세요..." class="message-input">
+                        <button class="send-btn" id="send-message-btn">전송</button>
+                    </div>
+                    <div class="conversation-hint" id="conversation-hint"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 리더보드 화면 -->
+        <div id="leaderboard-screen" class="screen">
+            <div class="leaderboard-header">
+                <button class="back-btn" id="back-from-leaderboard">← 뒤로</button>
+                <h2>🏆 리더보드</h2>
+            </div>
+            <div class="leaderboard-content">
+                <div class="leaderboard-tabs">
+                    <button class="leaderboard-tab active" data-board="all">전체</button>
+                    <button class="leaderboard-tab" data-board="weekly">주간</button>
+                    <button class="leaderboard-tab" data-board="monthly">월간</button>
+                </div>
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- 리더보드 항목이 여기에 동적으로 추가됩니다 -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 비밀번호 확인 모달 -->
-    <div id="password-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close">&times;</span>
-            <h3>🔒 데이터 삭제 확인</h3>
-            <p class="modal-warning">⚠️ 모든 직원 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</p>
-            <div class="password-input-group">
-                <label for="delete-password">비밀번호를 입력하세요:</label>
-                <p class="password-hint">💡 힌트: 이 사이트 주인의 별명은?</p>
-                <input type="password" id="delete-password" placeholder="비밀번호 입력" class="password-input">
-            </div>
-            <div class="modal-actions">
-                <button id="confirm-delete-btn" class="btn btn-danger">삭제하기</button>
-                <button id="cancel-delete-btn" class="btn btn-secondary">취소</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
