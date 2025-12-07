@@ -22,7 +22,7 @@ body {
 
 /* 헤더 */
 .app-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #dc143c; /* 인도네시아 국기 빨간색 */
     color: white;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
