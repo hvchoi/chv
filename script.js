@@ -1023,10 +1023,10 @@ function showCurrentPracticeQuestion() {
     document.getElementById('practice-feedback').textContent = '';
     document.getElementById('practice-feedback').className = 'practice-feedback';
     
-    // 다음 문제 버튼 숨기기
+    // 다음 문제 버튼 제거 (새 문제 표시 전에)
     const nextQuestionBtn = document.getElementById('next-question-btn');
     if (nextQuestionBtn) {
-        nextQuestionBtn.style.display = 'none';
+        nextQuestionBtn.remove();
     }
 }
 
@@ -1110,7 +1110,13 @@ function checkAnswer(selectedBtn, selectedOption, correctWord) {
             nextBtn.style.marginTop = '15px';
             nextBtn.style.width = '100%';
             nextBtn.onclick = () => {
+                // 다음 문제로 이동
                 currentPracticeIndex++;
+                // 버튼 제거
+                if (nextBtn.parentNode) {
+                    nextBtn.remove();
+                }
+                // 다음 문제 표시
                 showCurrentPracticeQuestion();
             };
             optionsDiv.appendChild(nextBtn);
@@ -1335,6 +1341,13 @@ document.getElementById('back-to-lessons').addEventListener('click', () => {
 });
 
 document.getElementById('next-card-btn').addEventListener('click', () => {
+    // 발음 연습 섹션이 열려있으면 먼저 닫기
+    const pronunciationSection = document.getElementById('pronunciation-section');
+    if (pronunciationSection && pronunciationSection.style.display !== 'none') {
+        pronunciationSection.style.display = 'none';
+        document.getElementById('learning-card').style.display = 'block';
+    }
+    
     currentCardIndex++;
     if (currentCardIndex < currentLesson.words.length) {
         showCard();
